@@ -59,12 +59,12 @@ export class TestService {
       throw new NotFoundException('Technology not found');
     }
   }
-  findById(id: string) {
-    return this.testModel.findById(id);
+  async findById(id: string) {
+    return await this.testModel.findById(id);
   }
 
-  updateFull(id: string, dto: UpdateTechnologyDto) {
-    return this.testModel.findByIdAndUpdate(id, dto, {
+  async updateFull(id: string, dto: UpdateTechnologyDto) {
+    return await this.testModel.findByIdAndUpdate(id, dto, {
       new: true,
       overwrite: true,
     });
