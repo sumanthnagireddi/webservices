@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ResourcesModule } from './modules/resource/resources.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TechnologiesModule } from './modules/technolgoies/technologies.module';
+import { TestModule } from './modules/technolgoies copy/test.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { TechnologiesModule } from './modules/technolgoies/technologies.module';
       inject: [ConfigService],
     }),
     ResourcesModule,
-    TechnologiesModule
+    TechnologiesModule,
+    TestModule
   ],
   controllers: [AppController],
   providers: [AppService],
