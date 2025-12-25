@@ -29,7 +29,10 @@ export class TopicController {
   getTopicById(@Param('id') id: string) {
     return this.topicService.getTopicByID(id);
   }
-
+  @Get('all/:id')
+  getTopicByTechnology(@Param('id') id: string) {
+    return this.topicService.getTopicByTechId(id);
+  }
   // PARTIAL UPDATE (PATCH)
   @Patch(':id')
   updatePartial(@Param('id') id: string, @Body() dto: UpdateTopicDto) {

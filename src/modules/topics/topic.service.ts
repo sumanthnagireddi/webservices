@@ -38,6 +38,9 @@ export class TopicService {
   async getTopicByID(id: string) {
     return await this.topicModel.findById(id);
   }
+  async getTopicByTechId(id: string) {
+    return await this.topicModel.find({ technologyId: id });
+  }
   async update(id: string, dto: UpdateTopicDto): Promise<Topics> {
     const updated = await this.topicModel.findByIdAndUpdate(id, dto, {
       new: true,
