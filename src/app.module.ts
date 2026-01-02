@@ -8,6 +8,7 @@ import { TechnologiesModule } from './modules/technolgoies/technologies.module';
 import { TestModule } from './modules/technolgoies copy/test.module';
 import { TopicsModule } from './modules/topics/topics.module';
 import { ContentModule } from './modules/content/content.module';
+import { BlogModule } from './modules/blogs/blog.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { ContentModule } from './modules/content/content.module';
     TechnologiesModule,
     TestModule,
     TopicsModule,
-    ContentModule
+    ContentModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -11,6 +11,8 @@ import { CreateTopicsDTO } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
 import { Content, ContentDocument } from '../content/content.schema';
 import { response } from 'express';
+import { UpdateContentDto } from '../content/dtos/update-content.dto';
+import { CreateContentDTO } from '../content/dtos/create-content.dto';
 
 @Injectable()
 export class TopicService {
@@ -47,10 +49,21 @@ export class TopicService {
     return await this.topicModel.find({ technologyId: id });
   }
   async update(id: string, dto: UpdateTopicDto): Promise<Topics> {
+    console.log(dto)
+    const body = {
+      title: dto.name,
+      description: dto.topic_description,
+    };
     const updated = await this.topicModel.findByIdAndUpdate(id, dto, {
       new: true,
     });
+    const topicId = new Types.ObjectId(id);
 
+    const updatedContent = await this.contentModel.findOneAndUpdate(
+      { topicId },
+      body,
+      { new: true },
+    );
     if (!updated) {
       throw new NotFoundException('Topic not found');
     }
@@ -65,7 +78,7 @@ export class TopicService {
     if (!topic) {
       throw new NotFoundException('Topic not found');
     }
-    // await this.contentModel.deleteOne({ topicId });
+    await this.contentModel.deleteOne({ topicId });
     return {
       message: 'Topic and related content deleted successfully',
     };
