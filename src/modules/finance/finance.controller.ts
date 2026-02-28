@@ -28,10 +28,14 @@ export class FinanceController {
   }
 
   @Get('/expenses')
-  findAllExpensesPerMonth(@Query('year') year: string, @Query('month') month: string) {
-    const y = parseInt(year  ?? `${new Date().getFullYear()}`);
+  findAllExpensesPerMonth(
+    @Query('year') year: string,
+    @Query('month') month: string,
+    @Query('type') type: string,
+  ) {
+    const y = parseInt(year ?? `${new Date().getFullYear()}`);
     const m = parseInt(month ?? `${new Date().getMonth() + 1}`);
-    return this.financeService.findAllExpensesPerMonth(y, m);
+    return this.financeService.findAllExpensesPerMonth(y, m, type);
   }
 
   @Get('/expense/:id')
@@ -77,8 +81,8 @@ export class FinanceController {
 
   // ── Budget ──
   @Get('/budget/:monthKey')
-  getBudget(@Param('monthKey') monthKey: string) {
-    return this.financeService.getBudgetForMonth(monthKey);
+  getBudget(@Param('monthKey') monthKey: string,@Query('type') type: string) {
+    return this.financeService.getBudgetForMonth(monthKey, type);
   }
 
   @Put('/budget/:monthKey')
@@ -92,47 +96,46 @@ export class FinanceController {
   }
   // Add to finance.controller.ts
 
-// GET  /finance/debts               → all active debts
-// GET  /finance/debts/summary       → summary numbers
-// GET  /finance/debts/settled       → settled debts
-// GET  /finance/debts/:id           → single debt
-// GET  /finance/debts?type=i_owe    → filtered by type
-// POST /finance/debts               → create
-// PATCH /finance/debts/:id          → update
-// PATCH /finance/debts/:id/settle   → mark settled
-// PATCH /finance/debts/:id/partial  → record partial payment
-// DELETE /finance/debts/:id         → soft delete
+  // GET  /finance/debts               → all active debts
+  // GET  /finance/debts/summary       → summary numbers
+  // GET  /finance/debts/settled       → settled debts
+  // GET  /finance/debts/:id           → single debt
+  // GET  /finance/debts?type=i_owe    → filtered by type
+  // POST /finance/debts               → create
+  // PATCH /finance/debts/:id          → update
+  // PATCH /finance/debts/:id/settle   → mark settled
+  // PATCH /finance/debts/:id/partial  → record partial payment
+  // DELETE /finance/debts/:id         → soft delete
 
-@Get('/debts/summary')
-getDebtSummary() {
-  return this.financeService.getDebtSummary();
-}
+  @Get('/debts/summary')
+  getDebtSummary() {
+    return this.financeService.getDebtSummary();
+  }
 
-@Get('/debts/settled')
-findSettledDebts() {
-  return this.financeService.findSettledDebts();
-}
+  @Get('/debts/settled')
+  findSettledDebts() {
+    return this.financeService.findSettledDebts();
+  }
 
- 
+  @Get('/debts/:id')
+  findOneDebt(@Param('id') id: string) {
+    return this.financeService.findOneDebt(id);
+  }
 
-@Get('/debts/:id')
-findOneDebt(@Param('id') id: string) {
-  return this.financeService.findOneDebt(id);
-}
+  @Patch('/debts/:id/settle')
+  markDebtSettled(@Param('id') id: string) {
+    return this.financeService.markDebtSettled(id);
+  }
 
-
-
-@Patch('/debts/:id/settle')
-markDebtSettled(@Param('id') id: string) {
-  return this.financeService.markDebtSettled(id);
-}
-
-@Patch('/debts/:id/partial')
-recordPartialPayment(@Param('id') id: string, @Body() dto: PartialPaymentDto) {
-  return this.financeService.recordPartialPayment(id, dto);
-}
-// @Post('/migrate')
-// async migrate() {
-//   return this.financeService.migrateExistingData();
-// }
+  @Patch('/debts/:id/partial')
+  recordPartialPayment(
+    @Param('id') id: string,
+    @Body() dto: PartialPaymentDto,
+  ) {
+    return this.financeService.recordPartialPayment(id, dto);
+  }
+  // @Post('/migrate')
+  // async migrate() {
+  //   return this.financeService.migrateExistingData();
+  // }
 }

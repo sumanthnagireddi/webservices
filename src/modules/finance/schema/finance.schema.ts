@@ -4,12 +4,21 @@ import { Document } from 'mongoose';
 
 export type FinanceDocument = Finance & Document;
 
-export type FinanceType = 'expense' | 'debt' | 'budget' | 'income'; // add future types here
+export type FinanceType =
+  | 'expense'
+  | 'debt'
+  | 'budget'
+  | 'income'
+  | 'construction'; // add future types here
 
 @Schema({ collection: 'finance', timestamps: true })
 export class Finance {
   // ── COMMON ──────────────────────────────
-  @Prop({ required: true, enum: ['expense', 'debt', 'budget', 'income'],default: 'expense' })
+  @Prop({
+    required: true,
+    enum: ['expense', 'debt', 'budget', 'income', 'construction'],
+    default: 'expense',
+  })
   type: FinanceType;
 
   @Prop({ default: false })

@@ -14,30 +14,40 @@ export class FinanceService {
   constructor(
     @InjectModel(Finance.name)
     private readonly financeModel: Model<FinanceDocument>,
-    @InjectModel('Budget') private readonly budgetModel: Model<BudgetDocument>,
-  ) {} // ← only ONE model injection now, budget model removed
+  ) {}
 
   // ── EXPENSES ──────────────────────────────────────────
 
   create(dto: CreateFinanceDto): Promise<Finance> {
-    return this.financeModel.create({ ...dto, type: 'expense' });
+    const { type } = dto;
+    return this.financeModel.create({ ...dto, type: type || 'expense' });
   }
 
-  findAllExpensesPerMonth(year: number, month: number): Promise<Finance[]> {
+  findAllExpensesPerMonth(
+    year: number,
+    month: number,
+    type?: string,
+  ): Promise<Finance[]> {
+    if (type === 'construction') {
+      return this.financeModel
+        .find({ type: 'construction', isDeleted: false })
+        .sort({ date: -1 })
+        .exec();
+    }
+
     const startStr = `${year}-${String(month).padStart(2, '0')}-01`;
     const endDate = new Date(year, month, 0);
     const endStr = `${year}-${String(month).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
 
     return this.financeModel
       .find({
-        type: 'expense',
+        type: type || 'expense',
         isDeleted: false,
         date: { $gte: startStr, $lte: endStr },
       })
       .sort({ date: -1 })
       .exec();
   }
-
   findOne(id: string) {
     return this.financeModel.findById(id).exec();
   }
@@ -87,9 +97,17 @@ export class FinanceService {
 
   // ── BUDGET ────────────────────────────────────────────
 
-  async getBudgetForMonth(monthKey: string) {
+  async getBudgetForMonth(monthKey: string, type?: string) {
+    if (type === 'home_budget') {
+      const all = await this.financeModel
+        .find({ type: 'home_budget', isDeleted: false })
+        .exec();
+      const totalSpent = all.reduce((sum, e) => sum + (e.monthlyBudget ?? 0), 0);
+      return { monthlyBudget: totalSpent, alertThreshold: 80 };
+    }
+
     const budget = await this.financeModel
-      .findOne({ type: 'budget', monthKey })
+      .findOne({ type: type || 'budget', monthKey })
       .exec();
     return budget ?? { monthlyBudget: 0, alertThreshold: 80 };
   }
@@ -136,9 +154,6 @@ export class FinanceService {
     return this.financeModel.findById(id).exec();
   }
 
- 
-
-
   // ── MARK AS SETTLED ───────────────────────────────────
   async markDebtSettled(id: string): Promise<Finance | null> {
     const debt = await this.financeModel.findById(id).exec();
@@ -172,7 +187,6 @@ export class FinanceService {
       .exec();
   }
 
-
   // ── DEBT SUMMARY ──────────────────────────────────────
   async getDebtSummary() {
     const debts = await this.financeModel
@@ -196,27 +210,23 @@ export class FinanceService {
     };
   }
   async migrateExistingData() {
-  const budgets = await this.budgetModel.find().exec();
-
-  if (budgets.length === 0) {
-    return { message: 'No budgets to migrate', migrated: 0 };
+    // const budgets = await this.budgetModel.find().exec();
+    // if (budgets.length === 0) {
+    //   return { message: 'No budgets to migrate', migrated: 0 };
+    // }
+    // // Insert each budget into finance collection with type: 'budget'
+    // const budgetDocs = budgets.map((b) => ({
+    //   type: 'budget',
+    //   monthKey: b.monthKey,
+    //   monthlyBudget: b.monthlyBudget,
+    //   alertThreshold: b.alertThreshold ?? 80,
+    //   isDeleted: false,
+    // }));
+    // await this.financeModel.insertMany(budgetDocs);
+    // return {
+    //   message: 'Budgets migrated successfully',
+    //   migrated: budgets.length,
+    //   data: budgetDocs,
+    // };
   }
-
-  // Insert each budget into finance collection with type: 'budget'
-  const budgetDocs = budgets.map((b) => ({
-    type:            'budget',
-    monthKey:        b.monthKey,
-    monthlyBudget:   b.monthlyBudget,
-    alertThreshold:  b.alertThreshold ?? 80,
-    isDeleted:       false,
-  }));
-
-  await this.financeModel.insertMany(budgetDocs);
-
-  return {
-    message:  'Budgets migrated successfully',
-    migrated: budgets.length,
-    data:     budgetDocs,
-  };
-}
 }

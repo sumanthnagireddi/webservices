@@ -1,6 +1,7 @@
 import * as expenseModel from '../../model/expense.model';
 import {
   IsBoolean,
+  isNotEmpty,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -40,4 +41,13 @@ export class CreateFinanceDto {
   isDeleted?: boolean;
   @IsOptional()
   cardType: string;
+  @IsNotEmpty()
+  @IsString()
+  type:
+    | 'expense'
+    | 'debt'
+    | 'budget'
+    | 'income'
+    | 'construction'
+    | 'home_budget';
 }
