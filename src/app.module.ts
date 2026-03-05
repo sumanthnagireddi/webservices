@@ -15,6 +15,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { FinanceModule } from './modules/finance/finance.module';
 import { AiModule } from './modules/ai/ai.module';
+import { SearchModule } from './modules/search/search.module';
 
 @Module({
   imports: [
@@ -48,7 +49,8 @@ import { AiModule } from './modules/ai/ai.module';
     AiModule,
     UserModule,
     AuthModule,
-    FinanceModule
+    FinanceModule,
+    SearchModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -102,7 +102,10 @@ export class FinanceService {
       const all = await this.financeModel
         .find({ type: 'home_budget', isDeleted: false })
         .exec();
-      const totalSpent = all.reduce((sum, e) => sum + (e.monthlyBudget ?? 0), 0);
+      const totalSpent = all.reduce(
+        (sum, e) => sum + (e.monthlyBudget ?? 0),
+        0,
+      );
       return { monthlyBudget: totalSpent, alertThreshold: 80 };
     }
 
