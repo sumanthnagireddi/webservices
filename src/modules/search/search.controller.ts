@@ -10,8 +10,6 @@ export class SearchController {
   search(@Query() query: SearchQueryDto) {
     return this.searchService.search({
       q: query.q,
-      page: Number(query.page ?? 1),
-      limit: Number(query.limit ?? 100),
       collections:
         typeof query.collections === 'string'
           ? (query.collections as string).split(',')

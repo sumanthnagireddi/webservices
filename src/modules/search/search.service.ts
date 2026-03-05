@@ -13,12 +13,12 @@ export interface SearchResult {
 export class SearchService {
   constructor(@InjectConnection() private readonly connection: Connection) {}
   private readonly SEARCHABLE_COLLECTIONS: Record<string, string[]> = {
-    content: ['title', 'body', 'description','topicId'],
+    content: ['title', 'body', 'description', 'topicId'],
     blogs: ['title', 'content', 'description'],
     topics: ['name', 'topic_description'],
   };
   async search(searchQueryDto: SearchQueryDto) {
-    const { q, page = 1, limit = 100, collections } = searchQueryDto;
+    const { q, collections } = searchQueryDto;
 
     const collectionList: string[] =
       typeof collections === 'string'
@@ -70,8 +70,6 @@ export class SearchService {
   ): Promise<any[]> {
     try {
       const fields = this.SEARCHABLE_COLLECTIONS[collectionName];
-
-      // Build projection: always include score + registered fields
       const projection = fields.reduce(
         (acc, field) => ({ ...acc, [field]: 1 }),
         { score: { $meta: 'textScore' } } as Record<string, any>,
@@ -79,8 +77,13 @@ export class SearchService {
 
       return (await this.connection
         .collection(collectionName)
-        .find({ $text: { $search: q } }, { projection })
-        .sort({ score: { $meta: 'textScore' } })
+        .aggregate([
+          { $match: { $text: { $search: q } } },
+          { $addFields: { score: { $meta: 'textScore' } } },
+          { $match: { score: { $gt: 1 } } }, // ← filter low relevance
+          { $sort: { score: -1 } },
+          { $project: projection },
+        ])
         .toArray()) as any[];
     } catch {
       // Collection may not exist yet or has no text index — skip silently
