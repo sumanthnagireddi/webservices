@@ -9,6 +9,7 @@ import { Technology, TechnologySchema } from '../technolgoies/technologies.schem
 import { RagAgent } from './agents/rag.agent';
 import { LlmService } from './searvices/llm.service';
 import { VectorService } from './searvices/vector.service';
+import { NvidiaLlmService } from './searvices/nvidia-llm.service';
 
 @Module({
    imports: [
@@ -24,6 +25,7 @@ import { VectorService } from './searvices/vector.service';
      LlmService,
      AiService,
      RagAgent,
+     NvidiaLlmService
    ],
    controllers: [AiController],
 })

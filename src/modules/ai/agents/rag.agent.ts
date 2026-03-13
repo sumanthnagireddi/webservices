@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { VectorService, SearchResult } from '../searvices/vector.service';
 import { LlmService } from '../searvices/llm.service';
+import { NvidiaLlmService, NvidiaModel } from '../searvices/nvidia-llm.service';
+import { VectorService } from '../searvices/vector.service';
+import { Response } from 'express';
 
 @Injectable()
 export class RagAgent {
@@ -9,34 +11,50 @@ export class RagAgent {
   constructor(
     private vector: VectorService,
     private llm: LlmService,
+    private nvidiaLlm: NvidiaLlmService,
   ) {}
 
-  async ask(question: string) {
+  async ask(question: string, useNvidia = true, nvidiaModel?: NvidiaModel) {
     this.logger.log(`Processing question: "${question}"`);
 
-    // Search for relevant context using text search (no embeddings needed)
-    const searchResults = await this.vector.search(question, 5);
+    // const searchResults = await this.vector.search(question, 5);
 
-    if (!searchResults.length) {
-      return {
-        status: 'success',
-        data: "I don't have any relevant information in the knowledge base to answer that question. Please make sure your content has been added to the database.",
-      };
+    // if (!searchResults.length) {
+    //   return {
+    //     status: 'success',
+    //     data: "I don't have relevant information in the knowledge base.",
+    //   };
+    // }
+
+    // const context = searchResults
+    //   .map(
+    //     (r, i) =>
+    //       `[${i + 1}] ${r.type.toUpperCase()}: ${r.title}\n${r.text}\n(Relevance: ${(r.score * 10).toFixed(1)}/10)`,
+    //   )
+    //   .join('\n\n---\n\n');
+
+    // ✅ Proper RAG system prompt
+    const systemPrompt = `You are a helpful assistant. Answer questions.`
+
+    const prompt = `QUESTION: ${question}`;
+
+    if (useNvidia) {
+      return this.nvidiaLlm.ask(prompt, nvidiaModel, systemPrompt);
     }
 
-    // Build context from search results
-    const contextParts = searchResults.map((result, idx) => {
-      return `[${idx + 1}] ${result.type.toUpperCase()}: ${result.title}\n${result.text}\n(Relevance: ${(result.score * 10).toFixed(1)}/10)`;
-    });
-
-    const context = contextParts.join('\n\n---\n\n');
-    console.log('Constructed context for RAG:\n', context);
-    // Create the RAG prompt
-    const prompt = `
-QUESTION:
-${question}`;
-
-    // Get response from LLM
-    return this.llm.ask(prompt);
+    // Falls back to Gemini
+    return this.llm.ask(`${systemPrompt}\n\n${prompt}`);
   }
+  async askStream(question: string, res: Response, useNvidia = true) {
+  const searchResults = await this.vector.search(question, 5);
+
+  const context = searchResults
+    .map((r, i) => `[${i + 1}] ${r.title}\n${r.text}`)
+    .join('\n\n---\n\n');
+
+  const systemPrompt = `Answer using ONLY this context:\n\n${context}`;
+  const prompt = `QUESTION: ${question}`;
+
+  return this.nvidiaLlm.askStream(prompt, res, undefined, systemPrompt);
+}
 }
