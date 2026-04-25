@@ -10,6 +10,10 @@ import { RagAgent } from './agents/rag.agent';
 import { LlmService } from './searvices/llm.service';
 import { VectorService } from './searvices/vector.service';
 import { NvidiaLlmService } from './searvices/nvidia-llm.service';
+import { FinanceService } from '../finance/finance.service';
+import { FinanceRagAgent } from './agents/finance.agent';
+import { AddExpenseExecutor } from './executors/add-expense.executor';
+import { Finance, FinanceSchema } from '../finance/schema/finance.schema';
 
 @Module({
    imports: [
@@ -18,6 +22,7 @@ import { NvidiaLlmService } from './searvices/nvidia-llm.service';
        { name: Content.name, schema: ContentSchema },
        { name: Blog.name, schema: BlogSchema },
        { name: Technology.name, schema: TechnologySchema },
+       { name: Finance.name, schema: FinanceSchema }
      ]),
    ],
    providers: [
@@ -25,7 +30,11 @@ import { NvidiaLlmService } from './searvices/nvidia-llm.service';
      LlmService,
      AiService,
      RagAgent,
-     NvidiaLlmService
+     NvidiaLlmService,
+     FinanceService,
+     FinanceRagAgent,
+     AddExpenseExecutor,
+
    ],
    controllers: [AiController],
 })

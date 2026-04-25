@@ -20,6 +20,7 @@ export class FinanceService {
 
   create(dto: CreateFinanceDto): Promise<Finance> {
     const { type } = dto;
+    console.log('Creating finance record with type:', dto);
     return this.financeModel.create({ ...dto, type: type || 'expense' });
   }
 
