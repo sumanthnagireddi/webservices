@@ -195,7 +195,7 @@ export class AtlassianService {
     bodyFormat: 'storage' | 'atlas_doc_format' = 'storage',
   ) {
     const response = await firstValueFrom(
-      this.http.get(`${this.getUrl()}/pages/${id}?body-format=${bodyFormat}`, {
+      this.http.get(`${this.getUrl()}/pages/${id}?body-format=atlas_doc_format`, {
         headers: this.getAuthHeaders(),
       }),
     );
