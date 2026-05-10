@@ -7,9 +7,6 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "docker:build": "docker build -t webservices-app .",
-    "docker:run": "docker run --rm --env-file .env -p 3000:3000 webservices-app",
-    "docker:compose": "docker compose up --build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
