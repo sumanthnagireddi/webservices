@@ -9,7 +9,9 @@
 
 ## 1. Executive Summary
 
-The **WebServices** repository is a comprehensive, scalable backend application built with **NestJS v11.0.1** that serves as a multi-domain content and resource management platform with advanced AI capabilities. The system integrates multiple LLMs (Large Language Models) for intelligent features including RAG (Retrieval Augmented Generation), financial tracking, and content management.
+The **WebServices** repository is a comprehensive, scalable backend application built with **NestJS v11.0.1** that serves as a multi-domain content and resource management platform for content, finance, search, authentication, and Atlassian integrations.
+
+> Note: the AI and agent capabilities described in older sections of this document were extracted into the separate `AI-Webservices` repository in May 2026. Docker-specific repo changes were also reverted, so this repository no longer carries Docker artifacts.
 
 **Primary Purpose:**  
 Provide RESTful APIs for:
@@ -18,7 +20,6 @@ Provide RESTful APIs for:
 - Content and resource organization
 - Learning technology catalogs
 - Blog and article management
-- AI-powered Q&A with context awareness
 - Financial tracking and expense management
 - Search and discovery capabilities
 - Interview question banking

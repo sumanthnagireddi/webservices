@@ -49,9 +49,6 @@ export class Blog {
   @Prop()
   publishedAt?: Date;
 
-  @Prop({ type: [Number], select: false })
-  embedding?: number[];
-
   /* ---------- Categorization ---------- */
   @Prop({ type: [String], index: true })
   tags?: string[];
