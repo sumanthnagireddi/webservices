@@ -5,7 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ResourcesModule } from './modules/resource/resources.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TechnologiesModule } from './modules/technolgoies/technologies.module';
-import { TestModule } from './modules/technolgoies copy/test.module';
 import { TopicsModule } from './modules/topics/topics.module';
 import { ContentModule } from './modules/content/content.module';
 import { BlogModule } from './modules/blogs/blog.module';
@@ -14,14 +13,19 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { FinanceModule } from './modules/finance/finance.module';
-import { AiModule } from './modules/ai/ai.module';
-import { SearchModule } from './modules/search/search.module';
-import { MemoryModule } from './modules/ai-v2/memory/memory.module';
-import { ChatbotModule } from './modules/ai-v2/chatbot/chatbot.module';
-import { AgentsModule } from './modules/ai-v2/agents/agents.module';
-import { AgentPlatformModule } from './modules/agent/agent.module';
 import { AtlassianModule } from './modules/atlassian/atlassian.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+
+// Only load AI modules in non-production environments
+const aiModules = process.env.NODE_ENV === 'production' ? [] : [
+  require('./modules/ai/ai.module').AiModule,
+  require('./modules/search/search.module').SearchModule,
+  require('./modules/ai-v2/memory/memory.module').MemoryModule,
+  require('./modules/ai-v2/chatbot/chatbot.module').ChatbotModule,
+  require('./modules/ai-v2/agents/agents.module').AgentsModule,
+  require('./modules/agent/agent.module').AgentPlatformModule,
+];
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -47,21 +51,15 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     }),
     ResourcesModule,
     TechnologiesModule,
-    TestModule,
     TopicsModule,
     ContentModule,
     BlogModule,
-    AiModule,
     UserModule,
     AuthModule,
     FinanceModule,
-    SearchModule,
-    MemoryModule,
-    ChatbotModule,
-    AgentsModule,
-    AgentPlatformModule,
     AtlassianModule,
     NotificationsModule,
+    ...aiModules,
   ],
   controllers: [AppController],
   providers: [AppService],
