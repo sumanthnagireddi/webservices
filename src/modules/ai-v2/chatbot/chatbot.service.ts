@@ -37,7 +37,7 @@ async handleMessage(dto: MessageDto) {
     .pipe(this.nvidiaService.llm)
     .pipe(new StringOutputParser());
 
-  const response = await chain.invoke({ question: dto.message }); // ← await here
+  const response = await chain.invoke({ question: dto.message }); // â† await here
 
   return { data: response };
 
@@ -67,7 +67,7 @@ async handleMessage(dto: MessageDto) {
     //   });
     //   data = result.message;
     // } else {
-    //   // 3b. Plain conversational turn — inject history + call LLM
+    //   // 3b. Plain conversational turn â€” inject history + call LLM
     //   const history = await this.memoryService.getHistory(sessionId);
     //   data = await this.orchestrator.chat(history, message);
     // }

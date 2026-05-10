@@ -18,13 +18,16 @@
     "test:cov": "jest --coverage",
     "test:ci": "jest --ci --coverage --maxWorkers=2",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:openai": "node scripts/test-openai-langchain.mjs",
+    "test:agent": "node scripts/test-agent-flow.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.40.0",
     "@huggingface/inference": "^4.13.11",
     "@langchain/core": "^1.1.41",
     "@langchain/openai": "^1.4.4",
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -36,7 +39,7 @@
     "@nestjs/schedule": "^6.1.0",
     "@nestjs/swagger": "^11.2.5",
     "@types/bcrypt": "^6.0.0",
-    "axios": "^1.13.4",
+    "axios": "^1.16.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",

@@ -1,17 +1,15 @@
-// route.node.ts
 import { Injectable, Logger } from '@nestjs/common';
-import { ROUTE_REGISTRY, RouteDecision, RouteType } from '../types/route.types';
 import { buildRoutePrompt } from '../../prompts/route.prompt';
-import { NvidiaProvider } from '../../llm/providers/nvidia.provider';
+import { ProviderFactoryService } from '../../llm/provider-factory.service';
+import { ROUTE_REGISTRY, RouteDecision, RouteType } from '../types/route.types';
 
-const CONFIDENCE_THRESHOLD = 0.65;
 const FALLBACK_ROUTE: RouteType = 'chat';
 
 @Injectable()
 export class RouteNode {
   private readonly logger = new Logger(RouteNode.name);
 
-  constructor(private readonly nvidiaProvider: NvidiaProvider) { }
+  constructor(private readonly providerFactory: ProviderFactoryService) {}
 
   async run(state: Record<string, unknown>): Promise<Record<string, unknown>> {
     const message = (state.message as string) ?? '';
@@ -23,34 +21,32 @@ export class RouteNode {
       decision = await this.classifyWithLlm(message, conversationContext);
     } catch (err) {
       this.logger.warn(`LLM routing failed, falling back to keyword router: ${err}`);
-      decision = this.keywordFallback(message); // keyword logic as last resort
+      decision = this.keywordFallback(message);
     }
 
     this.logger.debug(
-      `Routed "${message.slice(0, 60)}…" → ${decision.route} ` +
-      `(confidence=${decision.confidence}, reason="${decision.reasoning}")`
+      `Routed "${message.slice(0, 60)}..." -> ${decision.route} ` +
+        `(confidence=${decision.confidence}, reason="${decision.reasoning}")`,
     );
 
-    // Emit a metric so you can monitor misclassifications over time
     this.emitRoutingMetric(decision);
 
     return {
       ...state,
       route: decision.route,
-      routeDecision: decision,                          // full decision for downstream nodes
+      routeDecision: decision,
       needsClarification: decision.needsClarification,
     };
   }
-
-  // ─── LLM Classification ───────────────────────────────────────────────────
 
   private async classifyWithLlm(
     message: string,
     context?: string,
   ): Promise<RouteDecision> {
+    const provider = this.providerFactory.get();
     const prompt = buildRoutePrompt(message, context);
 
-    const { content } = await this.nvidiaProvider.generate({
+    const { content } = await provider.generate({
       systemPrompt: 'You are a routing classifier. Output only valid JSON.',
       userPrompt: prompt,
     });
@@ -85,45 +81,55 @@ export class RouteNode {
     }
   }
 
-  // ─── Keyword Fallback (runs only if LLM throws) ───────────────────────────
-
   private keywordFallback(message: string): RouteDecision {
     const lower = message.toLowerCase();
     let route: RouteType = FALLBACK_ROUTE;
 
     if (this.matches(lower, ['expense', 'transaction', 'finance', 'amount', 'pay'])) {
       route = 'finance-transaction';
-    } else if (this.matches(lower, ['create', 'write', 'new']) && this.matches(lower, ['blog', 'post', 'article'])) {
+    } else if (
+      this.matches(lower, ['create', 'write', 'new']) &&
+      this.matches(lower, ['blog', 'post', 'article'])
+    ) {
       route = 'blog-creation';
-    } else if (this.matches(lower, ['update', 'edit']) && this.matches(lower, ['blog', 'post'])) {
+    } else if (
+      this.matches(lower, ['update', 'edit']) &&
+      this.matches(lower, ['blog', 'post'])
+    ) {
       route = 'blog-update';
     } else if (this.matches(lower, ['report', 'pdf', 'document', 'export'])) {
       route = 'document-generation';
-    } else if (lower.includes('?') || this.matches(lower, ['how', 'what', 'why', 'explain'])) {
+    } else if (
+      lower.includes('?') ||
+      this.matches(lower, ['how', 'what', 'why', 'explain'])
+    ) {
       route = 'question';
     }
 
     return {
       route,
-      confidence: 0.4,          // explicitly low — came from fallback
+      confidence: 0.4,
       reasoning: 'keyword-fallback (LLM unavailable)',
       needsClarification: false,
     };
   }
 
   private matches(message: string, keywords: string[]): boolean {
-    return keywords.some((k) => message.includes(k));
+    return keywords.some((keyword) => message.includes(keyword));
   }
 
-  // ─── Helpers ──────────────────────────────────────────────────────────────
-
   private extractContext(state: Record<string, unknown>): string | undefined {
-    const history = state.conversationHistory as Array<{ role: string; content: string }> | undefined;
-    if (!history?.length) return undefined;
+    const history = state.conversationHistory as
+      | Array<{ role: string; content: string }>
+      | undefined;
+
+    if (!history?.length) {
+      return undefined;
+    }
 
     return history
-      .slice(-3)                          // last 3 turns for context
-      .map((m) => `${m.role}: ${m.content}`)
+      .slice(-3)
+      .map((message) => `${message.role}: ${message.content}`)
       .join('\n');
   }
 
@@ -137,9 +143,6 @@ export class RouteNode {
   }
 
   private emitRoutingMetric(decision: RouteDecision): void {
-    // Hook this into your metrics system (Prometheus, Datadog, CloudWatch, etc.)
-    // this.metrics.increment('agent.route', { route: decision.route });
-    // this.metrics.histogram('agent.route.confidence', decision.confidence);
     this.logger.verbose(`[metric] route=${decision.route} confidence=${decision.confidence}`);
   }
 }
