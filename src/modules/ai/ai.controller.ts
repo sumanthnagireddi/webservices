@@ -29,6 +29,11 @@ export class AiController {
   askStream(@Query('question') question: string, @Res() res: Response) {
     return this.rag.askStream(question, res);
   }
+  @Post('add-expense')
+  addExpenseWithAI(@Body() message: { question: string }) {
+    return this.aiService.addExpenseWithAI(message.question);
+  }
+
   @Get()
   findAll() {
     return this.aiService.findAll();
@@ -48,4 +53,5 @@ export class AiController {
   remove(@Param('id') id: string) {
     return this.aiService.remove(+id);
   }
+  
 }

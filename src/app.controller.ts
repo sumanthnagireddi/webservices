@@ -10,7 +10,7 @@ export class AppController {
   @Get()
   @ApiOperation({ summary: 'Health check endpoint' })
   @ApiResponse({ status: 200, description: 'Returns health status' })
-  getHealth(): string {
+  getHealth() {
     return this.appService.getHealth();
   }
 }

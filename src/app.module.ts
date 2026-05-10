@@ -16,7 +16,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { FinanceModule } from './modules/finance/finance.module';
 import { AiModule } from './modules/ai/ai.module';
 import { SearchModule } from './modules/search/search.module';
-
+import { MemoryModule } from './modules/ai-v2/memory/memory.module';
+import { ChatbotModule } from './modules/ai-v2/chatbot/chatbot.module';
+import { AgentsModule } from './modules/ai-v2/agents/agents.module';
+import { AgentPlatformModule } from './modules/agent/agent.module';
+import { AtlassianModule } from './modules/atlassian/atlassian.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -50,7 +55,13 @@ import { SearchModule } from './modules/search/search.module';
     UserModule,
     AuthModule,
     FinanceModule,
-    SearchModule
+    SearchModule,
+    MemoryModule,
+    ChatbotModule,
+    AgentsModule,
+    AgentPlatformModule,
+    AtlassianModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
