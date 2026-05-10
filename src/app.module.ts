@@ -3,8 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AgentPlatformModule } from './modules/agent/agent.module';
-import { AiModule } from './modules/ai/ai.module';
 import { BlogModule } from './modules/blogs/blog.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { UserModule } from './modules/user/user.module';
@@ -43,10 +41,8 @@ import { SearchModule } from './modules/search/search.module';
     UserModule,
     AuthModule,
     FinanceModule,
-    AiModule,
     SearchModule,
     InterviewBankModule,
-    AgentPlatformModule,
     AtlassianModule,
     NotificationsModule,
   ],
