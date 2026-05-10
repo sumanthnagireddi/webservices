@@ -65,7 +65,8 @@ export class AgentConversations {
   errorMessage?: string;
 }
 
-export const AgentConversationsSchema = SchemaFactory.createForClass(AgentConversations);
+export const AgentConversationsSchema =
+  SchemaFactory.createForClass(AgentConversations);
 
 // Fetch all messages in a session in order — your most common query
 AgentConversationsSchema.index({ sessionId: 1, sequenceNumber: 1 });

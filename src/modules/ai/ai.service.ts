@@ -6,7 +6,7 @@ import { NVIDIA_MODELS } from './searvices/nvidia-llm.service';
 
 @Injectable()
 export class AiService {
-  constructor(private financeRag:FinanceRagAgent) {}
+  constructor(private financeRag: FinanceRagAgent) {}
   create(createAiDto: CreateAiDto) {
     return 'This action adds a new ai';
   }

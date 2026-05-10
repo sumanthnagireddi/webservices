@@ -12,7 +12,7 @@ export class SearchController {
       q: query.q,
       collections:
         typeof query.collections === 'string'
-          ? (query.collections as string).split(',')
+          ? query.collections.split(',')
           : query.collections,
     });
   }

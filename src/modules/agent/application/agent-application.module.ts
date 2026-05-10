@@ -10,7 +10,6 @@ import { AgentKnowledgeModule } from '../knowledge/agent-knowledge.module';
 import { AgentObservabilityModule } from '../observability/agent-observability.module';
 import { AgentGovernanceModule } from '../governance/agent-governance.module';
 import { ConversationsService } from './conversations.service';
-import { AgenticLlmService } from 'src/modules/ai-v2/agents/agentic.llm.service';
 import { AgentDbModule } from '../db/agent-db.module';
 import { AgentLlmModule } from '../llm/agent-llm.module';
 import { TitleGeneratorService } from './title-generator.service';
@@ -33,9 +32,8 @@ import { TitleGeneratorService } from './title-generator.service';
     ResponseBuilderService,
     MemoryExtractorService,
     ConversationsService,
-    AgenticLlmService,
-    TitleGeneratorService
+    TitleGeneratorService,
   ],
-  exports: [AgentService,ConversationsService,AgenticLlmService],
+  exports: [AgentService, ConversationsService],
 })
 export class AgentApplicationModule {}

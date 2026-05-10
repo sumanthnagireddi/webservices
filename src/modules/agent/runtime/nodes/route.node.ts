@@ -20,7 +20,9 @@ export class RouteNode {
     try {
       decision = await this.classifyWithLlm(message, conversationContext);
     } catch (err) {
-      this.logger.warn(`LLM routing failed, falling back to keyword router: ${err}`);
+      this.logger.warn(
+        `LLM routing failed, falling back to keyword router: ${err}`,
+      );
       decision = this.keywordFallback(message);
     }
 
@@ -85,7 +87,15 @@ export class RouteNode {
     const lower = message.toLowerCase();
     let route: RouteType = FALLBACK_ROUTE;
 
-    if (this.matches(lower, ['expense', 'transaction', 'finance', 'amount', 'pay'])) {
+    if (
+      this.matches(lower, [
+        'expense',
+        'transaction',
+        'finance',
+        'amount',
+        'pay',
+      ])
+    ) {
       route = 'finance-transaction';
     } else if (
       this.matches(lower, ['create', 'write', 'new']) &&
@@ -143,6 +153,8 @@ export class RouteNode {
   }
 
   private emitRoutingMetric(decision: RouteDecision): void {
-    this.logger.verbose(`[metric] route=${decision.route} confidence=${decision.confidence}`);
+    this.logger.verbose(
+      `[metric] route=${decision.route} confidence=${decision.confidence}`,
+    );
   }
 }

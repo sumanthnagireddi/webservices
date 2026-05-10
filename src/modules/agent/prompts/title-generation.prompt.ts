@@ -1,4 +1,5 @@
-export const agentTitlePrompt = (firstMessage: string) => `
+export const agentTitlePrompt = (firstMessage: string) =>
+  `
 Generate a concise, descriptive title for a chat session based on the user's first message.
 
 <rules>

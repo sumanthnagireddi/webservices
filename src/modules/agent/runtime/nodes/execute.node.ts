@@ -51,7 +51,9 @@ export class ExecuteNode {
       return '1. Understand the request\n2. Answer directly';
     }
 
-    return plan.map((step, index) => `${index + 1}. ${String(step)}`).join('\n');
+    return plan
+      .map((step, index) => `${index + 1}. ${String(step)}`)
+      .join('\n');
   }
 
   private formatKnowledge(knowledge: unknown): string {

@@ -31,11 +31,15 @@ export class SessionService {
     };
   }
 
-  async create( userId:string ,title:string): Promise<AgentSession> {
+  async create(userId: string, title: string): Promise<AgentSession> {
     const sessionId = uuidv4();
     await this.shortTermMemory.initializeSession(sessionId);
     const profile = await this.longTermMemory.getProfile(userId);
-    const agentSession = await this.agentSessionModel.create({ userId,sessionId,title });
+    const agentSession = await this.agentSessionModel.create({
+      userId,
+      sessionId,
+      title,
+    });
     return {
       sessionId: agentSession.sessionId,
       userId,

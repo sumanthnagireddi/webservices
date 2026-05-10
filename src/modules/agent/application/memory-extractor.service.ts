@@ -13,6 +13,10 @@ export class MemoryExtractorService {
     loopResult: { answer: string },
   ): Promise<void> {
     await this.shortTermMemory.append(sessionId, 'user', userMessage);
-    await this.shortTermMemory.append(sessionId, 'assistant', loopResult.answer);
+    await this.shortTermMemory.append(
+      sessionId,
+      'assistant',
+      loopResult.answer,
+    );
   }
 }

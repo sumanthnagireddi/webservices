@@ -15,11 +15,11 @@ export class AddExpenseExecutor {
   }) {
     // Map LLM args → your existing CreateFinanceDto shape
     return this.financeService.create({
-      title: args.merchant, 
+      title: args.merchant,
       amount: args.amount,
-      category: args.category as any,
+      category: args.category,
       date: args.date,
-      cardType: 'Cash',             // default — LLM doesn't know card type
+      cardType: 'Cash', // default — LLM doesn't know card type
       type: 'expense', // refund = income, else expense
       notes: args.notes ?? '',
     });

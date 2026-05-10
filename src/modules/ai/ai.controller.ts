@@ -53,5 +53,4 @@ export class AiController {
   remove(@Param('id') id: string) {
     return this.aiService.remove(+id);
   }
-  
 }

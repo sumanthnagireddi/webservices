@@ -65,6 +65,8 @@ export class NvidiaProvider implements LlmProvider {
         .join('');
     }
 
-    throw new Error(`Unexpected content type from NVIDIA API: ${typeof content}`);
+    throw new Error(
+      `Unexpected content type from NVIDIA API: ${typeof content}`,
+    );
   }
 }

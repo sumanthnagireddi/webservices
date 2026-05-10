@@ -36,9 +36,10 @@ export class OpenAiProvider implements LlmProvider {
     ];
 
     try {
-      const response = await this.createClient(this.preferredModel, apiKey).invoke(
-        messages,
-      );
+      const response = await this.createClient(
+        this.preferredModel,
+        apiKey,
+      ).invoke(messages);
 
       return {
         content: this.normalizeContent(response.content),
@@ -52,9 +53,10 @@ export class OpenAiProvider implements LlmProvider {
         `OPENAI_MODEL "${this.preferredModel}" is unavailable. Retrying with ${this.fallbackModel}.`,
       );
 
-      const response = await this.createClient(this.fallbackModel, apiKey).invoke(
-        messages,
-      );
+      const response = await this.createClient(
+        this.fallbackModel,
+        apiKey,
+      ).invoke(messages);
 
       return {
         content: this.normalizeContent(response.content),

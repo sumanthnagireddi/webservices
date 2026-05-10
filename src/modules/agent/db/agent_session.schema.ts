@@ -16,7 +16,7 @@ export class AgentSession {
   @Prop({ index: true })
   sessionId!: string;
   /* ---------- Lifecycle ---------- */
-  @Prop({ default: true})
+  @Prop({ default: true })
   isActive!: boolean;
 
   @Prop()

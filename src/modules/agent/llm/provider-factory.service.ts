@@ -21,7 +21,8 @@ export class ProviderFactoryService {
   ) {}
 
   get(provider: AgentProviderName = 'auto'): LlmProvider {
-    const resolved = provider === 'auto' ? this.resolveDefaultProvider() : provider;
+    const resolved =
+      provider === 'auto' ? this.resolveDefaultProvider() : provider;
 
     if (resolved === 'openai') {
       return this.openAiProvider;

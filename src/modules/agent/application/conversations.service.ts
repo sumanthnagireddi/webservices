@@ -12,7 +12,11 @@ export class ConversationsService {
     ];
   }
 
-  async addToConversation(sessionId: string, message: string, response: string) {
+  async addToConversation(
+    sessionId: string,
+    message: string,
+    response: string,
+  ) {
     console.log(`Adding message to conversation ${sessionId}: ${message}`);
     console.log(`Adding response to conversation ${sessionId}: ${response}`);
   }
@@ -30,5 +34,4 @@ export class ConversationsService {
     // In a real implementation, this would delete from a database or in-memory store.
     console.log(`Deleting conversation ${sessionId}`);
   }
-  
 }

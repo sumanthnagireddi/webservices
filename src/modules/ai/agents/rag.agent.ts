@@ -34,7 +34,7 @@ export class RagAgent {
     //   .join('\n\n---\n\n');
 
     // ✅ Proper RAG system prompt
-    const systemPrompt = `You are a helpful assistant. Answer questions.`
+    const systemPrompt = `You are a helpful assistant. Answer questions.`;
 
     const prompt = `QUESTION: ${question}`;
 
@@ -46,15 +46,15 @@ export class RagAgent {
     return this.llm.ask(`${systemPrompt}\n\n${prompt}`);
   }
   async askStream(question: string, res: Response, useNvidia = true) {
-  const searchResults = await this.vector.search(question, 5);
+    const searchResults = await this.vector.search(question, 5);
 
-  const context = searchResults
-    .map((r, i) => `[${i + 1}] ${r.title}\n${r.text}`)
-    .join('\n\n---\n\n');
+    const context = searchResults
+      .map((r, i) => `[${i + 1}] ${r.title}\n${r.text}`)
+      .join('\n\n---\n\n');
 
-  const systemPrompt = `Answer using ONLY this context:\n\n${context}`;
-  const prompt = `QUESTION: ${question}`;
+    const systemPrompt = `Answer using ONLY this context:\n\n${context}`;
+    const prompt = `QUESTION: ${question}`;
 
-  return this.nvidiaLlm.askStream(prompt, res, undefined, systemPrompt);
-}
+    return this.nvidiaLlm.askStream(prompt, res, undefined, systemPrompt);
+  }
 }

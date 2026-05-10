@@ -1,12 +1,16 @@
 // route-prompt.ts
 
-import { ROUTE_REGISTRY } from "../runtime/types/route.types";
+import { ROUTE_REGISTRY } from '../runtime/types/route.types';
 
 const routeDescriptions = Object.entries(ROUTE_REGISTRY)
   .map(([key, val]) => `- "${key}": ${val.description}`)
   .join('\n');
 
-export const buildRoutePrompt = (message: string, conversationContext?: string) => `
+export const buildRoutePrompt = (
+  message: string,
+  conversationContext?: string,
+) =>
+  `
 You are a routing classifier for an AI agent system. Classify the user message into exactly one route.
 
 <routes>

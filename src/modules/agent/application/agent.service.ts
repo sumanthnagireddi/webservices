@@ -20,8 +20,8 @@ export class AgentService {
     private readonly responseBuilder: ResponseBuilderService,
     private readonly memoryExtractor: MemoryExtractorService,
     private readonly conversationsService: ConversationsService,
-    private readonly titleGenerator: TitleGeneratorService
-  ) { }
+    private readonly titleGenerator: TitleGeneratorService,
+  ) {}
 
   async handleMessage(dto: SendMessageDto) {
     // const user = await this.userService.getCurrentUser();
@@ -30,8 +30,16 @@ export class AgentService {
     // add a new method to get the suitable and best llm model based on the user query and context
     const context = await this.contextBuilder.build(session, dto.message);
     const loopResult = await this.loopRunner.run(context);
-    await this.memoryExtractor.capture(session.sessionId, dto.message, loopResult);
-    await this.conversationsService.addToConversation(session.sessionId, dto.message, loopResult.answer);
+    await this.memoryExtractor.capture(
+      session.sessionId,
+      dto.message,
+      loopResult,
+    );
+    await this.conversationsService.addToConversation(
+      session.sessionId,
+      dto.message,
+      loopResult.answer,
+    );
     return this.responseBuilder.build(session.sessionId, loopResult);
   }
 
@@ -40,7 +48,10 @@ export class AgentService {
     return { success: true, sessionId };
   }
 
-  async handleSession(dto: SendMessageDto, userId: string): Promise<AgentSession> {
+  async handleSession(
+    dto: SendMessageDto,
+    userId: string,
+  ): Promise<AgentSession> {
     const sessionTitle = await this.titleGenerator.generateTitle(dto.message);
     const session = dto.sessionId
       ? await this.sessionService.load(dto.sessionId)

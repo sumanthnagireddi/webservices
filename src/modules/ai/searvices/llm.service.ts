@@ -13,12 +13,11 @@ export const GEMINI_MODELS = [
   'gemini-2.0-flash-lite',
   'Gemma 3',
   'Gemma 3n',
-  
 ] as any;
 /**
  * RAG-based Document Q&A App
  * AI-Powered SaaS Dashboard
- * 
+ *
  */
 export type GeminiModel = (typeof GEMINI_MODELS)[number];
 
@@ -40,7 +39,7 @@ export class LlmService {
   async ask(prompt: string, model: GeminiModel = 'gemini-3-flash-preview') {
     try {
       this.logger.debug(`Generating content with model: ${model}`);
-      
+
       const response = await this.ai.models.generateContent({
         model: model,
         contents: prompt,
@@ -48,7 +47,8 @@ export class LlmService {
 
       // In @google/genai SDK, response.text() is typically a function.
       // We handle simpler access if it changes or behaves differently.
-      const text = typeof response.text === 'function' ? response.text: response.text;
+      const text =
+        typeof response.text === 'function' ? response.text : response.text;
 
       return { status: 'success', data: text };
     } catch (error) {

@@ -5,8 +5,7 @@ import { Injectable } from '@nestjs/common';
 export class FinalizeNode {
   async run(state: Record<string, any>) {
     return {
-      answer:
-        state.execution?.draft ?? 'Agent finalizer placeholder response.',
+      answer: state.execution?.draft ?? 'Agent finalizer placeholder response.',
       iterations: 1,
     };
   }

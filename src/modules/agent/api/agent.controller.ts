@@ -8,7 +8,10 @@ import { ConversationsService } from '../application/conversations.service';
 // logic to the application layer.
 @Controller('agent')
 export class AgentController {
-  constructor(private readonly agentService: AgentService,private readonly conversationsService: ConversationsService) {}
+  constructor(
+    private readonly agentService: AgentService,
+    private readonly conversationsService: ConversationsService,
+  ) {}
 
   // Main sync endpoint for a user message.
   @Post('message')

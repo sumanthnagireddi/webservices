@@ -23,18 +23,16 @@ export class EmbeddingService {
     for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
       try {
         this.logger.log(`Embedding attempt ${attempt}/${this.MAX_RETRIES}`);
-        
+
         const embedding = await this.hf.featureExtraction({
           model: 'sentence-transformers/all-MiniLM-L6-v2',
           inputs: text,
           parameters: { normalize: true },
         });
-        
+
         return embedding[0] as number[];
-      } catch (error:any) {
-        this.logger.warn(
-          `Attempt ${attempt} failed: ${error.message}`,
-        );
+      } catch (error: any) {
+        this.logger.warn(`Attempt ${attempt} failed: ${error.message}`);
 
         if (attempt === this.MAX_RETRIES) {
           // Last attempt failed, try direct API call
@@ -42,12 +40,10 @@ export class EmbeddingService {
         }
 
         // Wait before retry (exponential backoff)
-        await new Promise((resolve) =>
-          setTimeout(resolve, 1000 * attempt),
-        );
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
       }
     }
-    
+
     // Fallback in case loop completes without returning
     return await this.embedDirect(text);
   }
@@ -58,7 +54,7 @@ export class EmbeddingService {
   private async embedDirect(text: string): Promise<number[]> {
     try {
       this.logger.log('Trying direct HuggingFace API call...');
-      
+
       const apiKey = this.config.get<string>('HF_API_KEY');
       if (!apiKey) {
         throw new Error('HF_API_KEY not configured');
@@ -82,9 +78,9 @@ export class EmbeddingService {
       }
 
       throw new Error('Invalid response format from HuggingFace API');
-    } catch (error:any) {
+    } catch (error: any) {
       this.logger.error('Direct API call also failed:', error.message);
-      
+
       // Return a dummy embedding as last resort (for testing)
       this.logger.warn('Returning dummy embedding for testing purposes');
       return this.generateDummyEmbedding(text);
@@ -96,22 +92,22 @@ export class EmbeddingService {
    * WARNING: This is NOT suitable for production!
    */
   private generateDummyEmbedding(text: string): number[] {
-    this.logger.warn('⚠️  Using dummy embeddings - NOT suitable for production!');
-    
+    this.logger.warn(
+      '⚠️  Using dummy embeddings - NOT suitable for production!',
+    );
+
     // Simple hash-based approach for 384 dimensions
     const embedding = new Array(384).fill(0);
-    
+
     for (let i = 0; i < text.length; i++) {
       const charCode = text.charCodeAt(i);
       const index = (charCode * i) % 384;
       embedding[index] += charCode / 1000;
     }
-    
+
     // Normalize
-    const norm = Math.sqrt(
-      embedding.reduce((sum, val) => sum + val * val, 0),
-    );
-    
+    const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
+
     return embedding.map((val) => val / (norm || 1));
   }
 }
