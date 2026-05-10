@@ -89,7 +89,10 @@ export function mapAtlassianPageResponse(
   };
 }
 
-function buildAbsoluteLink(siteUrl?: string, path?: string): string | undefined {
+function buildAbsoluteLink(
+  siteUrl?: string,
+  path?: string,
+): string | undefined {
   if (!path) {
     return undefined;
   }

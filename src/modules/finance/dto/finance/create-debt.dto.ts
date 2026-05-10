@@ -1,5 +1,10 @@
-// create-debt.dto.ts
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsEnum } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateDebtDto {
   @IsNotEmpty()
@@ -20,5 +25,5 @@ export class CreateDebtDto {
 
   @IsOptional()
   @IsString()
-  dueDate?: string;       // YYYY-MM-DD
+  dueDate?: string;
 }

@@ -4,7 +4,6 @@ import { Observable, Subject, interval, map, merge } from 'rxjs';
 import {
   NotificationEnvelope,
   NotificationPayload,
-  NotificationStatus,
 } from './notifications.types';
 
 @Injectable()
@@ -62,7 +61,7 @@ export class NotificationsService {
             service: 'notifications',
             event: 'notifications.heartbeat',
             message: 'Notifications stream heartbeat',
-            status: 'info' as NotificationStatus,
+            status: 'info',
             createdAt: new Date().toISOString(),
           },
         })),

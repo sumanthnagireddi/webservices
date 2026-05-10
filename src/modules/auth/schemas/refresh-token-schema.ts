@@ -1,14 +1,16 @@
-import { Document } from "mongoose";
-import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-@Schema({collection: 'refreshtokens', timestamps: true})
+@Schema({ collection: 'refreshtokens', timestamps: true })
 export class RefreshToken extends Document {
-    @Prop()
-    userId: string;
-    @Prop()
-    refreshToken: string;
+  @Prop()
+  userId: string;
 
-    @Prop()
-    expiresAt: Date;
+  @Prop()
+  refreshToken: string;
+
+  @Prop()
+  expiresAt: Date;
 }
+
 export const RefreshTokenSchema = SchemaFactory.createForClass(RefreshToken);

@@ -1,18 +1,14 @@
 import { Module } from '@nestjs/common';
-import { FinanceService } from './finance.service';
-import { FinanceController } from './finance.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { FinanceSchema } from './schema/finance.schema';
-import { BudgetSchema } from './schema/budget.schema';
+import { FinanceController } from './finance.controller';
+import { FinanceService } from './finance.service';
+import { Finance, FinanceSchema } from './schema/finance.schema';
 
 @Module({
   controllers: [FinanceController],
   providers: [FinanceService],
   imports: [
-    MongooseModule.forFeature([
-      { name: 'Finance', schema: FinanceSchema },
-      { name: 'Budget', schema: BudgetSchema },
-    ]),
+    MongooseModule.forFeature([{ name: Finance.name, schema: FinanceSchema }]),
   ],
 })
 export class FinanceModule {}

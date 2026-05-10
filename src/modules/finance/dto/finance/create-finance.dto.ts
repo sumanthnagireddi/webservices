@@ -1,7 +1,5 @@
-import * as expenseModel from '../../model/expense.model';
 import {
   IsBoolean,
-  isNotEmpty,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -12,42 +10,48 @@ export class CreateFinanceDto {
   @IsNotEmpty()
   @IsString()
   title: string;
+
   @IsNotEmpty()
   @IsNumber()
   amount: number;
+
   @IsNotEmpty()
   @IsString()
-  category: expenseModel.ExpenseCategory;
+  category: string;
+
   @IsNotEmpty()
   @IsString()
   date: string;
+
   @IsOptional()
   @IsString()
   notes?: string;
+
   @IsOptional()
   @IsString()
   source?: 'manual' | 'sms';
+
   @IsOptional()
   @IsString()
   createdAt?: string;
+
   @IsOptional()
   @IsString()
   updatedAt?: string;
+
   @IsOptional()
   @IsString()
   deletedAt?: string;
+
   @IsOptional()
   @IsBoolean()
   isDeleted?: boolean;
+
   @IsOptional()
-  cardType: string;
-  @IsNotEmpty()
   @IsString()
-  type:
-    | 'expense'
-    | 'debt'
-    | 'budget'
-    | 'income'
-    | 'construction'
-    | 'home_budget';
+  cardType?: string;
+
+  @IsOptional()
+  @IsString()
+  type?: string;
 }

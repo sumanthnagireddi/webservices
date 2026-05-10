@@ -1,27 +1,27 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Put,
   Query,
 } from '@nestjs/common';
-import { FinanceService } from './finance.service';
-import { CreateFinanceDto } from './dto/finance/create-finance.dto';
-import { UpdateFinanceDto } from './dto/finance/update-finance.dto';
 import { CopyBudgetDto } from './dto/budget/copyBudget.dto';
 import { CreateDebtDto } from './dto/finance/create-debt.dto';
+import { CreateFinanceDto } from './dto/finance/create-finance.dto';
 import { PartialPaymentDto } from './dto/finance/partial-payment.dto';
+import { UpdateDebtDto } from './dto/finance/update-debt.dto';
+import { UpdateFinanceDto } from './dto/finance/update-finance.dto';
+import { FinanceService } from './finance.service';
+import { isFinanceType } from './schema/finance.schema';
 
-// finance.controller.ts
 @Controller('finance')
 export class FinanceController {
   constructor(private readonly financeService: FinanceService) {}
 
-  // ── Expenses ──
   @Post('/add-expense')
   create(@Body() dto: CreateFinanceDto) {
     return this.financeService.create(dto);
@@ -31,11 +31,23 @@ export class FinanceController {
   findAllExpensesPerMonth(
     @Query('year') year: string,
     @Query('month') month: string,
-    @Query('type') type: string,
+    @Query('type') type?: string,
   ) {
-    const y = parseInt(year ?? `${new Date().getFullYear()}`);
-    const m = parseInt(month ?? `${new Date().getMonth() + 1}`);
-    return this.financeService.findAllExpensesPerMonth(y, m, type);
+    const resolvedYear = Number.parseInt(
+      year ?? `${new Date().getFullYear()}`,
+      10,
+    );
+    const resolvedMonth = Number.parseInt(
+      month ?? `${new Date().getMonth() + 1}`,
+      10,
+    );
+    const resolvedType = isFinanceType(type) ? type : undefined;
+
+    return this.financeService.findAllExpensesPerMonth(
+      resolvedYear,
+      resolvedMonth,
+      resolvedType,
+    );
   }
 
   @Get('/expense/:id')
@@ -58,7 +70,6 @@ export class FinanceController {
     return this.financeService.addExpenses(expenses);
   }
 
-  // ── Debts ──
   @Get('/debts')
   findAllDebts() {
     return this.financeService.findAllDebts();
@@ -70,7 +81,7 @@ export class FinanceController {
   }
 
   @Patch('/update-debt/:id')
-  updateDebt(@Param('id') id: string, @Body() dto: any) {
+  updateDebt(@Param('id') id: string, @Body() dto: UpdateDebtDto) {
     return this.financeService.updateDebt(id, dto);
   }
 
@@ -79,14 +90,19 @@ export class FinanceController {
     return this.financeService.removeDebt(id);
   }
 
-  // ── Budget ──
   @Get('/budget/:monthKey')
-  getBudget(@Param('monthKey') monthKey: string,@Query('type') type: string) {
-    return this.financeService.getBudgetForMonth(monthKey, type);
+  getBudget(@Param('monthKey') monthKey: string, @Query('type') type?: string) {
+    return this.financeService.getBudgetForMonth(
+      monthKey,
+      isFinanceType(type) ? type : undefined,
+    );
   }
 
   @Put('/budget/:monthKey')
-  setBudget(@Param('monthKey') monthKey: string, @Body() body: any) {
+  setBudget(
+    @Param('monthKey') monthKey: string,
+    @Body() body: { monthlyBudget: number; alertThreshold: number },
+  ) {
     return this.financeService.saveBudgetForMonth(monthKey, body);
   }
 
@@ -94,18 +110,6 @@ export class FinanceController {
   copyBudget(@Body() dto: CopyBudgetDto) {
     return this.financeService.copyBudgetToMonth(dto.fromKey, dto.toKey);
   }
-  // Add to finance.controller.ts
-
-  // GET  /finance/debts               → all active debts
-  // GET  /finance/debts/summary       → summary numbers
-  // GET  /finance/debts/settled       → settled debts
-  // GET  /finance/debts/:id           → single debt
-  // GET  /finance/debts?type=i_owe    → filtered by type
-  // POST /finance/debts               → create
-  // PATCH /finance/debts/:id          → update
-  // PATCH /finance/debts/:id/settle   → mark settled
-  // PATCH /finance/debts/:id/partial  → record partial payment
-  // DELETE /finance/debts/:id         → soft delete
 
   @Get('/debts/summary')
   getDebtSummary() {
@@ -134,8 +138,4 @@ export class FinanceController {
   ) {
     return this.financeService.recordPartialPayment(id, dto);
   }
-  // @Post('/migrate')
-  // async migrate() {
-  //   return this.financeService.migrateExistingData();
-  // }
 }

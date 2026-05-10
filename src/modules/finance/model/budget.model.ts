@@ -1,4 +1,4 @@
-import { ExpenseCategory } from "./expense.model";
+import { ExpenseCategory } from './expense.model';
 
 export interface BudgetSettings {
   monthlyBudget: number;
@@ -9,7 +9,7 @@ export interface BudgetSettings {
 export type MonthlyBudgetMap = Record<string, BudgetSettings>;
 
 export interface MonthSummary {
-  month: string;            // e.g. '2026-02'
+  month: string; // e.g. '2026-02'
   totalSpent: number;
   budget: number;
   remaining: number;
@@ -26,5 +26,5 @@ export interface ParsedSmsTransaction {
   date: string;
   type: 'debit' | 'credit' | 'unknown';
   category: ExpenseCategory;
-  selected: boolean;   // user toggle for bulk import
+  selected: boolean; // user toggle for bulk import
 }

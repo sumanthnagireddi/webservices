@@ -54,11 +54,17 @@ describe('UserService', () => {
 
       mockUserModel.findOne.mockResolvedValue(null);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
-      mockUserModel.create.mockResolvedValue({ ...createUserDto, password: 'hashedPassword', _id: '123' });
+      mockUserModel.create.mockResolvedValue({
+        ...createUserDto,
+        password: 'hashedPassword',
+        _id: '123',
+      });
 
       const result = await service.create(createUserDto);
 
-      expect(mockUserModel.findOne).toHaveBeenCalledWith({ email: createUserDto.email });
+      expect(mockUserModel.findOne).toHaveBeenCalledWith({
+        email: createUserDto.email,
+      });
       expect(bcrypt.hash).toHaveBeenCalledWith(createUserDto.password, 10);
       expect(mockUserModel.create).toHaveBeenCalled();
       expect(result).toBeDefined();
@@ -73,7 +79,9 @@ describe('UserService', () => {
 
       mockUserModel.findOne.mockResolvedValue(mockUser);
 
-      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
@@ -95,7 +103,9 @@ describe('UserService', () => {
 
       const result = await service.findOne('test@example.com');
 
-      expect(mockUserModel.findOne).toHaveBeenCalledWith({ email: 'test@example.com' });
+      expect(mockUserModel.findOne).toHaveBeenCalledWith({
+        email: 'test@example.com',
+      });
       expect(result).toEqual(mockUser);
     });
   });
@@ -106,7 +116,9 @@ describe('UserService', () => {
 
       const result = await service.findByID('64f1a1c2a12b3c001a000001');
 
-      expect(mockUserModel.findOne).toHaveBeenCalledWith({ _id: '64f1a1c2a12b3c001a000001' });
+      expect(mockUserModel.findOne).toHaveBeenCalledWith({
+        _id: '64f1a1c2a12b3c001a000001',
+      });
       expect(result).toEqual(mockUser);
     });
   });
@@ -114,11 +126,17 @@ describe('UserService', () => {
   describe('update', () => {
     it('should update a user', async () => {
       const updateUserDto = { name: 'Updated Name' };
-      mockUserModel.findByIdAndUpdate.mockResolvedValue({ ...mockUser, ...updateUserDto });
+      mockUserModel.findByIdAndUpdate.mockResolvedValue({
+        ...mockUser,
+        ...updateUserDto,
+      });
 
       const result = await service.update(1, updateUserDto);
 
-      expect(mockUserModel.findByIdAndUpdate).toHaveBeenCalledWith(1, updateUserDto);
+      expect(mockUserModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        1,
+        updateUserDto,
+      );
       expect(result).toBeDefined();
     });
   });

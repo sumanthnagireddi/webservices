@@ -130,12 +130,8 @@ describe('BlogService', () => {
       const execMock = jest.fn().mockResolvedValue(null);
       mockBlogModel.findById.mockReturnValue({ exec: execMock });
 
-      await expect(service.findById(blogId)).rejects.toThrow(
-        NotFoundException,
-      );
-      await expect(service.findById(blogId)).rejects.toThrow(
-        'Blog not found',
-      );
+      await expect(service.findById(blogId)).rejects.toThrow(NotFoundException);
+      await expect(service.findById(blogId)).rejects.toThrow('Blog not found');
     });
   });
 
@@ -159,9 +155,7 @@ describe('BlogService', () => {
       const execMock = jest.fn().mockResolvedValue(null);
       mockBlogModel.findOne.mockReturnValue({ exec: execMock });
 
-      await expect(service.findBySlug(slug)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.findBySlug(slug)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -175,11 +169,9 @@ describe('BlogService', () => {
 
       const result = await service.update(blogId, updateData);
 
-      expect(model.findByIdAndUpdate).toHaveBeenCalledWith(
-        blogId,
-        updateData,
-        { new: true },
-      );
+      expect(model.findByIdAndUpdate).toHaveBeenCalledWith(blogId, updateData, {
+        new: true,
+      });
       expect(result).toEqual(updatedBlog);
     });
 
@@ -187,9 +179,9 @@ describe('BlogService', () => {
       const blogId = 'nonexistent';
       mockBlogModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(
-        service.update(blogId, { title: 'Test' }),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.update(blogId, { title: 'Test' })).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -221,9 +213,7 @@ describe('BlogService', () => {
       const blogId = 'nonexistent';
       mockBlogModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(service.publish(blogId)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.publish(blogId)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -243,9 +233,7 @@ describe('BlogService', () => {
       const blogId = 'nonexistent';
       mockBlogModel.findByIdAndUpdate.mockResolvedValue(null);
 
-      await expect(service.remove(blogId)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.remove(blogId)).rejects.toThrow(NotFoundException);
     });
   });
 });

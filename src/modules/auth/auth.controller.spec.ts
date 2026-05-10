@@ -77,9 +77,7 @@ describe('AuthController', () => {
         password: 'wrongpass',
       };
 
-      mockAuthService.login.mockRejectedValue(
-        new Error('Invalid credentials'),
-      );
+      mockAuthService.login.mockRejectedValue(new Error('Invalid credentials'));
 
       await expect(controller.login(loginDto)).rejects.toThrow(
         'Invalid credentials',

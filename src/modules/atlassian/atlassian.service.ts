@@ -47,9 +47,10 @@ export class AtlassianService {
   async upsertContent(
     payload: CreateAtlassianContentDto,
   ): Promise<AtlassianContentDocument> {
-    const folderPath = payload.parentType === 'folder' && payload.parentId
-      ? await this.getFolderPath(payload.parentId)
-      : [];
+    const folderPath =
+      payload.parentType === 'folder' && payload.parentId
+        ? await this.getFolderPath(payload.parentId)
+        : [];
     const mappedPayload = mapAtlassianContentPayload(
       payload,
       this.getUrl(),
@@ -97,11 +98,7 @@ export class AtlassianService {
             ? await this.getFolderPath(payload.parentId)
             : [];
 
-        return mapAtlassianContentPayload(
-          payload,
-          this.getUrl(),
-          folderPath,
-        );
+        return mapAtlassianContentPayload(payload, this.getUrl(), folderPath);
       }),
     );
 
@@ -160,7 +157,8 @@ export class AtlassianService {
   }
 
   async getAllPages() {
-    const { mergedTrees, pageCount } = await this.buildFolderHierarchyWithPages();
+    const { mergedTrees, pageCount } =
+      await this.buildFolderHierarchyWithPages();
 
     this.notificationsService.publishSuccess({
       service: 'atlassian',
@@ -176,7 +174,8 @@ export class AtlassianService {
   }
 
   async getFolderHierarchy(): Promise<AtlassianFolderNode[]> {
-    const { mergedTrees, pageCount } = await this.buildFolderHierarchyWithPages();
+    const { mergedTrees, pageCount } =
+      await this.buildFolderHierarchyWithPages();
 
     this.notificationsService.publishSuccess({
       service: 'atlassian',
@@ -196,7 +195,7 @@ export class AtlassianService {
     bodyFormat: 'storage' | 'atlas_doc_format' = 'storage',
   ) {
     const response = await firstValueFrom(
-      this.http.get(`${this.getUrl()}/pages/${id}?body-format=atlas_doc_format`, {
+      this.http.get(`${this.getUrl()}/pages/${id}?body-format=${bodyFormat}`, {
         headers: this.getAuthHeaders(),
       }),
     );
@@ -230,7 +229,9 @@ export class AtlassianService {
     trigger: 'cron' | 'manual',
   ): Promise<AtlassianPageSyncReport | { skipped: true; reason: string }> {
     if (this.isContentSyncRunning) {
-      this.logger.warn('Skipping Atlassian content sync because one is already running');
+      this.logger.warn(
+        'Skipping Atlassian content sync because one is already running',
+      );
       return {
         skipped: true,
         reason: 'Atlassian content sync is already running',
@@ -254,7 +255,9 @@ export class AtlassianService {
           const message =
             error instanceof Error ? error.message : 'Unknown sync error';
           failures.push({ pageId: page.id, message });
-          this.logger.error(`Failed to sync Atlassian page ${page.id}: ${message}`);
+          this.logger.error(
+            `Failed to sync Atlassian page ${page.id}: ${message}`,
+          );
         }
       }
 
@@ -296,7 +299,9 @@ export class AtlassianService {
     trigger: 'cron' | 'manual',
   ): Promise<AtlassianFolderSyncReport | { skipped: true; reason: string }> {
     if (this.isFolderSyncRunning) {
-      this.logger.warn('Skipping Atlassian folder sync because one is already running');
+      this.logger.warn(
+        'Skipping Atlassian folder sync because one is already running',
+      );
       return {
         skipped: true,
         reason: 'Atlassian folder sync is already running',
@@ -326,7 +331,9 @@ export class AtlassianService {
       const existingIds = new Set(
         existingFolders.map((folder) => String(folder.atlassianId)),
       );
-      const missingIds = discoveredFolderIds.filter((id) => !existingIds.has(id));
+      const missingIds = discoveredFolderIds.filter(
+        (id) => !existingIds.has(id),
+      );
 
       const now = new Date();
       const missingFolders = await Promise.all(
@@ -537,7 +544,8 @@ export class AtlassianService {
     const children = this.toNodeArray(node.children);
 
     if (children.length === 0) {
-      const { children: _children, ...rest } = node;
+      const rest = { ...node };
+      delete rest.children;
       return rest;
     }
 
@@ -593,7 +601,10 @@ export class AtlassianService {
         continue;
       }
 
-      const folderPath = await this.getFolderPath(page.parentId, folderPathCache);
+      const folderPath = await this.getFolderPath(
+        page.parentId,
+        folderPathCache,
+      );
 
       for (const folder of folderPath) {
         uniqueFolderIds.add(String(folder.id));
@@ -605,7 +616,8 @@ export class AtlassianService {
 
   private async fetchAllPagesMetadata(): Promise<AtlassianPageSummary[]> {
     const results: AtlassianPageSummary[] = [];
-    let nextUrl: string | undefined = `${this.getUrl()}/spaces/${this.getSpaceKey()}/pages?limit=250`;
+    let nextUrl: string | undefined =
+      `${this.getUrl()}/spaces/${this.getSpaceKey()}/pages?limit=250`;
 
     while (nextUrl) {
       const response = await firstValueFrom(
@@ -687,7 +699,9 @@ export class AtlassianService {
     folderPathCache: Map<string, AtlassianFolderNode[]>,
     syncedAt: Date,
   ) {
-    const folder = (await this.getFolderById(Number(folderId))) as AtlassianFolderSummary;
+    const folder = (await this.getFolderById(
+      Number(folderId),
+    )) as AtlassianFolderSummary;
     const folderPath = await this.getFolderPath(folderId, folderPathCache);
 
     return {
@@ -738,12 +752,13 @@ export class AtlassianService {
     }
 
     const links =
-      record._links && typeof record._links === 'object' && !Array.isArray(record._links)
+      record._links &&
+      typeof record._links === 'object' &&
+      !Array.isArray(record._links)
         ? (record._links as Record<string, unknown>)
         : undefined;
-    const nestedNext = links && typeof links.next === 'string'
-      ? links.next
-      : undefined;
+    const nestedNext =
+      links && typeof links.next === 'string' ? links.next : undefined;
 
     return this.resolveApiUrl(nestedNext);
   }

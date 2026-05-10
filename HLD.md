@@ -13,6 +13,7 @@ The **WebServices** repository is a comprehensive, scalable backend application 
 
 **Primary Purpose:**  
 Provide RESTful APIs for:
+
 - User authentication and management
 - Content and resource organization
 - Learning technology catalogs
@@ -98,20 +99,19 @@ Provide RESTful APIs for:
 
 ### 2.2 Technology Stack
 
-| Component | Technology | Version |
-|-----------|-----------|---------|
-| **Runtime** | Node.js | LTS |
-| **Framework** | NestJS | 11.0.1 |
-| **Language** | TypeScript | 5.6+ |
-| **Database** | MongoDB | 9.3.1 (Mongoose) |
-| **Authentication** | JWT + Passport | Latest |
-| **API Docs** | Swagger/OpenAPI | Latest |
-| **Validation** | class-validator | 0.14.3 |
-| **Password Hash** | bcrypt | 6.0.0 |
-| **LLM Integration** | Multiple (OpenAI, HF, Google, etc.) | Latest |
-| **HTTP Client** | axios | 1.13.4 |
-| **Task Scheduling** | @nestjs/schedule | 6.1.0 |
-| **State Management** | RxJS | 7.8.1 |
+| Component            | Technology                          | Version          |
+| -------------------- | ----------------------------------- | ---------------- |
+| **Runtime**          | Node.js                             | LTS              |
+| **Framework**        | NestJS                              | 11.0.1           |
+| **Language**         | TypeScript                          | 5.6+             |
+| **Database**         | MongoDB                             | 9.3.1 (Mongoose) |
+| **Authentication**   | JWT + Passport                      | Latest           |
+| **Validation**       | class-validator                     | 0.14.3           |
+| **Password Hash**    | bcrypt                              | 6.0.0            |
+| **LLM Integration**  | Multiple (OpenAI, HF, Google, etc.) | Latest           |
+| **HTTP Client**      | axios                               | 1.13.4           |
+| **Task Scheduling**  | @nestjs/schedule                    | 6.1.0            |
+| **State Management** | RxJS                                | 7.8.1            |
 
 ---
 
@@ -119,29 +119,30 @@ Provide RESTful APIs for:
 
 ### 3.1 Module Overview Table
 
-| Module | Purpose | Key Entities | Status |
-|--------|---------|--------------|--------|
-| **Auth** | User authentication & authorization | JWT tokens, login sessions | Production |
-| **User** | User account management | User profiles, credentials | Production |
-| **Content** | Content organization & lifecycle | Articles, pages, status workflows | Production |
-| **Blog** | Blog platform management | Blogs, posts, comments | Production |
-| **Resources** | Learning resource management | Tutorials, guides, references | Production |
-| **Technologies** | Tech stack catalog | Frameworks, languages, tools | Production |
-| **Topics** | Topic organization | Topics within technologies | Production |
-| **AI** | AI-powered features | RAG agents, LLM integration | Production |
-| **Finance** | Financial tracking | Expenses, transactions | Production |
-| **Search** | Content discovery | Indexing, querying | Production |
-| **Interview Bank** | Interview resources | Questions, answers, resources | Production |
-| **Projects** | Project management | Project tracking, documentation | Development |
-| **Roadmap** | Learning paths | Learning roadmaps, progression | Development |
-| **Ideas** | Idea management | Idea capture, organization | Development |
-| **Snippets** | Code snippets | Code storage, tagging | Development |
-| **Bookmarks** | Content bookmarking | Saved references | Development |
-| **Test** | Testing module | Temporary/test features | Development |
+| Module             | Purpose                             | Key Entities                      | Status      |
+| ------------------ | ----------------------------------- | --------------------------------- | ----------- |
+| **Auth**           | User authentication & authorization | JWT tokens, login sessions        | Production  |
+| **User**           | User account management             | User profiles, credentials        | Production  |
+| **Content**        | Content organization & lifecycle    | Articles, pages, status workflows | Production  |
+| **Blog**           | Blog platform management            | Blogs, posts, comments            | Production  |
+| **Resources**      | Learning resource management        | Tutorials, guides, references     | Production  |
+| **Technologies**   | Tech stack catalog                  | Frameworks, languages, tools      | Production  |
+| **Topics**         | Topic organization                  | Topics within technologies        | Production  |
+| **AI**             | AI-powered features                 | RAG agents, LLM integration       | Production  |
+| **Finance**        | Financial tracking                  | Expenses, transactions            | Production  |
+| **Search**         | Content discovery                   | Indexing, querying                | Production  |
+| **Interview Bank** | Interview resources                 | Questions, answers, resources     | Production  |
+| **Projects**       | Project management                  | Project tracking, documentation   | Development |
+| **Roadmap**        | Learning paths                      | Learning roadmaps, progression    | Development |
+| **Ideas**          | Idea management                     | Idea capture, organization        | Development |
+| **Snippets**       | Code snippets                       | Code storage, tagging             | Development |
+| **Bookmarks**      | Content bookmarking                 | Saved references                  | Development |
+| **Test**           | Testing module                      | Temporary/test features           | Development |
 
 ### 3.2 Detailed Module Architecture
 
 #### Authentication Module
+
 ```
 AuthModule
 ├── Controllers
@@ -159,6 +160,7 @@ AuthModule
 ```
 
 #### Content Management Module
+
 ```
 ContentModule
 ├── Controllers
@@ -181,6 +183,7 @@ ContentModule
 ```
 
 #### AI Module (Core Innovation)
+
 ```
 AIModule
 ├── Controllers
@@ -214,6 +217,7 @@ AIModule
 ```
 
 #### Finance Module
+
 ```
 FinanceModule
 ├── Controllers
@@ -325,6 +329,7 @@ GET    /snippets                            # List snippets
 ### 5.1 Core Models
 
 #### User Schema
+
 ```typescript
 {
   _id: ObjectId,
@@ -340,6 +345,7 @@ GET    /snippets                            # List snippets
 ```
 
 #### Content Schema
+
 ```typescript
 {
   _id: ObjectId,
@@ -358,6 +364,7 @@ GET    /snippets                            # List snippets
 ```
 
 #### Blog Schema
+
 ```typescript
 {
   _id: ObjectId,
@@ -377,6 +384,7 @@ GET    /snippets                            # List snippets
 ```
 
 #### BlogPost Schema
+
 ```typescript
 {
   _id: ObjectId,
@@ -393,6 +401,7 @@ GET    /snippets                            # List snippets
 ```
 
 #### Technology Schema
+
 ```typescript
 {
   _id: ObjectId,
@@ -405,6 +414,7 @@ GET    /snippets                            # List snippets
 ```
 
 #### Topic Schema
+
 ```typescript
 {
   _id: ObjectId,
@@ -417,6 +427,7 @@ GET    /snippets                            # List snippets
 ```
 
 #### Finance Schema
+
 ```typescript
 {
   _id: ObjectId,
@@ -464,7 +475,6 @@ GET    /snippets                            # List snippets
 - **CORS**: Enabled for cross-origin requests
 - **Input Validation**: Global ValidationPipe (class-validator)
 - **Error Handling**: Standardized error responses
-- **Swagger Security**: Bearer JWT authentication in API docs
 
 ---
 
@@ -474,14 +484,14 @@ GET    /snippets                            # List snippets
 
 The AI module supports multiple LLM providers through abstract interfaces:
 
-| Provider | Library | Use Case | Status |
-|----------|---------|----------|--------|
-| **OpenAI** | openai@^6.18.0 | GPT models, primary | Active |
-| **HuggingFace** | @huggingface/inference | Open-source models | Active |
-| **Google GenAI** | @google/genai | Google's models | Active |
-| **Groq** | groq-sdk | High-speed inference | Active |
-| **Ollama** | ollama | Local models | Active |
-| **NVIDIA** | NVIDIA API | Cloud inference | Active |
+| Provider         | Library                | Use Case             | Status |
+| ---------------- | ---------------------- | -------------------- | ------ |
+| **OpenAI**       | openai@^6.18.0         | GPT models, primary  | Active |
+| **HuggingFace**  | @huggingface/inference | Open-source models   | Active |
+| **Google GenAI** | @google/genai          | Google's models      | Active |
+| **Groq**         | groq-sdk               | High-speed inference | Active |
+| **Ollama**       | ollama                 | Local models         | Active |
+| **NVIDIA**       | NVIDIA API             | Cloud inference      | Active |
 
 ### 7.2 Firebase Integration
 
@@ -578,11 +588,11 @@ ENABLE_STREAMING=true
 
 ### 9.2 Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `nest-cli.json` | NestJS CLI settings |
-| `tsconfig.json` | TypeScript configuration (ES2023) |
-| `tsconfig.build.json` | Build-specific TypeScript config |
+| File                  | Purpose                           |
+| --------------------- | --------------------------------- |
+| `nest-cli.json`       | NestJS CLI settings               |
+| `tsconfig.json`       | TypeScript configuration (ES2023) |
+| `tsconfig.build.json` | Build-specific TypeScript config  |
 
 ---
 
@@ -646,11 +656,8 @@ npm run format            # Prettier formatting
 
 ## 12. API Documentation
 
-- **Swagger UI**: Available at `http://localhost:3000/api`
-- **Swagger JSON**: `http://localhost:3000/api-json`
-- **Authentication**: Bearer JWT token required in Authorization header
-- **Interactive Testing**: Full request/response examples
-- **Auto-Generated Docs**: Swagger decorators on controllers
+- This service does not include a built-in API documentation UI.
+- Request contracts are defined directly in controllers, DTO validation rules, and the Postman collection.
 
 ---
 

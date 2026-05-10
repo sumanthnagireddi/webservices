@@ -104,9 +104,7 @@ describe('BlogController', () => {
 
     it('should propagate not found error from service', async () => {
       const blogId = 'nonexistent';
-      mockBlogService.findById.mockRejectedValue(
-        new Error('Blog not found'),
-      );
+      mockBlogService.findById.mockRejectedValue(new Error('Blog not found'));
 
       await expect(controller.findById(blogId)).rejects.toThrow(
         'Blog not found',
@@ -185,9 +183,7 @@ describe('BlogController', () => {
 
     it('should handle publishing non-existent blog', async () => {
       const blogId = 'nonexistent';
-      mockBlogService.publish.mockRejectedValue(
-        new Error('Blog not found'),
-      );
+      mockBlogService.publish.mockRejectedValue(new Error('Blog not found'));
 
       await expect(controller.publish(blogId)).rejects.toThrow(
         'Blog not found',
@@ -207,13 +203,9 @@ describe('BlogController', () => {
 
     it('should handle deletion of non-existent blog', async () => {
       const blogId = 'nonexistent';
-      mockBlogService.remove.mockRejectedValue(
-        new Error('Blog not found'),
-      );
+      mockBlogService.remove.mockRejectedValue(new Error('Blog not found'));
 
-      await expect(controller.remove(blogId)).rejects.toThrow(
-        'Blog not found',
-      );
+      await expect(controller.remove(blogId)).rejects.toThrow('Blog not found');
     });
   });
 });
