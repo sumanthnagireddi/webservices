@@ -11,6 +11,7 @@ export interface AtlassianContentPersistenceInput {
   parentId?: string;
   spaceId?: string;
   status?: string;
+  authorName?: string;
   body?: string;
   bodyRepresentation?: string;
   atlasDocFormat?: unknown;
@@ -30,19 +31,24 @@ export function mapAtlassianContentPayload(
   siteUrl?: string,
   folderPath: AtlassianFolderNode[] = [],
 ): AtlassianContentPersistenceInput {
-  const storageBody = payload.body?.storage;
-  const atlasDocBody = payload.body?.atlas_doc_format;
+  const bodyRecord = asRecord(payload.body);
+  const storageBody = asRecord(bodyRecord?.storage);
+  const atlasDocBody = bodyRecord?.atlas_doc_format;
 
   return {
-    atlassianId: payload.id,
+    atlassianId: payload.id ?? payload.atlassianId,
     title: payload.title,
     parentType: payload.parentType,
     parentId: payload.parentId,
     spaceId: payload.spaceId,
     status: payload.status,
-    body: extractBodyText(storageBody?.value, atlasDocBody),
+    authorName: extractAuthorName(payload),
+    body: extractBodyText(
+      getStringValue(storageBody?.value),
+      asRecord(atlasDocBody),
+    ),
     bodyRepresentation:
-      storageBody?.representation ??
+      getStringValue(storageBody?.representation) ??
       (atlasDocBody ? 'atlas_doc_format' : undefined),
     atlasDocFormat: atlasDocBody,
     versionNumber: payload.version?.number,
@@ -72,6 +78,7 @@ export function mapAtlassianPageResponse(
     parentId: payload.parentId ?? undefined,
     spaceId: payload.spaceId,
     status: payload.status,
+    authorName: extractAuthorName(payload),
     body: extractBodyText(storageBody?.value, atlasDocBody),
     bodyRepresentation:
       getStringValue(storageBody?.representation) ??
@@ -134,4 +141,36 @@ function asRecord(value: unknown): Record<string, unknown> | undefined {
 
 function getStringValue(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined;
+}
+
+function extractAuthorName(payload: unknown): string | undefined {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return undefined;
+  }
+
+  const record = payload as Record<string, unknown>;
+  const candidates = [
+    (record['version'] as Record<string, unknown> | undefined)?.['author'],
+    (record['author'] as Record<string, unknown> | undefined)?.['displayName'],
+    (record['history'] as Record<string, unknown> | undefined)?.['createdBy'],
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate.trim();
+    }
+
+    if (
+      candidate &&
+      typeof candidate === 'object' &&
+      !Array.isArray(candidate) &&
+      typeof (candidate as Record<string, unknown>)['displayName'] === 'string'
+    ) {
+      return String(
+        (candidate as Record<string, unknown>)['displayName'],
+      ).trim();
+    }
+  }
+
+  return undefined;
 }

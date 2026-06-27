@@ -1,81 +1,37 @@
-import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsDateString,
-  IsInt,
-  IsNotEmpty,
-  IsObject,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
-export class AtlassianContentVersionDto {
-  @IsInt()
-  number: number;
-
-  @IsOptional()
-  @IsString()
-  message?: string;
-
-  @IsOptional()
-  @IsDateString()
-  createdAt?: string;
-}
-
-export class AtlassianContentStorageDto {
-  @IsString()
-  representation: string;
-
-  @IsString()
-  value: string;
-}
-
-export class AtlassianContentBodyDto {
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => AtlassianContentStorageDto)
-  storage?: AtlassianContentStorageDto;
-
-  @IsOptional()
-  @IsObject()
-  atlas_doc_format?: Record<string, unknown>;
-}
-
-export class AtlassianContentLinksDto {
-  @IsOptional()
-  @IsString()
-  editui?: string;
-
-  @IsOptional()
-  @IsString()
-  webui?: string;
-
-  @IsOptional()
-  @IsString()
-  edituiv2?: string;
-
-  @IsOptional()
-  @IsString()
-  tinyui?: string;
-}
+// Existing DTOs
 
 export class CreateAtlassianContentDto {
   @IsString()
-  @IsNotEmpty()
-  id: string;
+  atlassianId!: string;
 
   @IsString()
-  @IsNotEmpty()
-  title: string;
+  title!: string;
+
+  @IsOptional()
+  body?:
+    | string
+    | {
+        storage?: { value?: string; representation?: string };
+        atlas_doc_format?: unknown;
+      };
 
   @IsOptional()
   @IsString()
-  parentType?: string;
+  spaceKey?: string;
 
   @IsOptional()
   @IsString()
   parentId?: string;
+
+  @IsOptional()
+  @IsString()
+  id?: string;
+
+  @IsOptional()
+  @IsString()
+  parentType?: string;
 
   @IsOptional()
   @IsString()
@@ -86,26 +42,44 @@ export class CreateAtlassianContentDto {
   status?: string;
 
   @IsOptional()
-  @IsDateString()
-  createdAt?: string;
-
-  @ValidateNested()
-  @Type(() => AtlassianContentVersionDto)
-  version: AtlassianContentVersionDto;
-
-  @ValidateNested()
-  @Type(() => AtlassianContentBodyDto)
-  body: AtlassianContentBodyDto;
+  version?: {
+    number?: number;
+    createdAt?: string;
+  };
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => AtlassianContentLinksDto)
-  _links?: AtlassianContentLinksDto;
+  _links?: {
+    webui?: string;
+    editui?: string;
+    edituiv2?: string;
+    tinyui?: string;
+  };
+
+  @IsOptional()
+  createdAt?: string;
 }
 
-export class BulkUpsertAtlassianContentDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateAtlassianContentDto)
-  items: CreateAtlassianContentDto[];
+// New DTOs
+
+export class CreatePageDto {
+  @IsString()
+  title!: string;
+
+  @IsString()
+  spaceKey!: string;
+
+  @IsString()
+  body!: string;
+
+  @IsOptional()
+  @IsString()
+  parentId?: string;
+}
+
+export class UpdatePageDto {
+  @IsString()
+  title!: string;
+
+  @IsString()
+  body!: string;
 }

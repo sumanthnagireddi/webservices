@@ -23,8 +23,18 @@ export class FinanceController {
   constructor(private readonly financeService: FinanceService) {}
 
   @Post('/add-expense')
-  create(@Body() dto: CreateFinanceDto) {
-    return this.financeService.create(dto);
+  create(@Body() dto: CreateFinanceDto, @Query('type') type?: string) {
+    return this.financeService.create(
+      dto,
+      isFinanceType(type) ? type : undefined,
+    );
+  }
+
+  @Get('/get-expenses')
+  findAllExpenses(@Query('type') type?: string) {
+    return this.financeService.findAllExpenses(
+      isFinanceType(type) ? type : undefined,
+    );
   }
 
   @Get('/expenses')
@@ -50,6 +60,29 @@ export class FinanceController {
     );
   }
 
+  @Get('/dashboard')
+  getDashboard(
+    @Query('year') year: string,
+    @Query('month') month: string,
+    @Query('type') type?: string,
+  ) {
+    const resolvedYear = Number.parseInt(
+      year ?? `${new Date().getFullYear()}`,
+      10,
+    );
+    const resolvedMonth = Number.parseInt(
+      month ?? `${new Date().getMonth() + 1}`,
+      10,
+    );
+    const resolvedType = isFinanceType(type) ? type : undefined;
+
+    return this.financeService.getDashboard(
+      resolvedYear,
+      resolvedMonth,
+      resolvedType,
+    );
+  }
+
   @Get('/expense/:id')
   findOne(@Param('id') id: string) {
     return this.financeService.findOne(id);
@@ -66,8 +99,11 @@ export class FinanceController {
   }
 
   @Post('/add-expenses')
-  addExpenses(@Body() expenses: CreateFinanceDto[]) {
-    return this.financeService.addExpenses(expenses);
+  addExpenses(@Body() expenses: CreateFinanceDto[], @Query('type') type?: string) {
+    return this.financeService.addExpenses(
+      expenses,
+      isFinanceType(type) ? type : undefined,
+    );
   }
 
   @Get('/debts')
@@ -102,13 +138,22 @@ export class FinanceController {
   setBudget(
     @Param('monthKey') monthKey: string,
     @Body() body: { monthlyBudget: number; alertThreshold: number },
+    @Query('type') type?: string,
   ) {
-    return this.financeService.saveBudgetForMonth(monthKey, body);
+    return this.financeService.saveBudgetForMonth(
+      monthKey,
+      body,
+      isFinanceType(type) ? type : undefined,
+    );
   }
 
   @Post('/budget/copy')
-  copyBudget(@Body() dto: CopyBudgetDto) {
-    return this.financeService.copyBudgetToMonth(dto.fromKey, dto.toKey);
+  copyBudget(@Body() dto: CopyBudgetDto, @Query('type') type?: string) {
+    return this.financeService.copyBudgetToMonth(
+      dto.fromKey,
+      dto.toKey,
+      isFinanceType(type) ? type : undefined,
+    );
   }
 
   @Get('/debts/summary')

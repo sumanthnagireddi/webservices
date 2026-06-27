@@ -2,7 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, SchemaTypes } from 'mongoose';
 import { AtlassianFolderNode } from './atlassian.interfaces';
 
-export type AtlassianContentDocument = AtlassianContent & Document;
+export type AtlassianContentDocument = AtlassianContent &
+  Document & {
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
 
 @Schema({
   collection: 'atlassianContent',
@@ -26,6 +30,9 @@ export class AtlassianContent {
 
   @Prop()
   status?: string;
+
+  @Prop()
+  authorName?: string;
 
   @Prop()
   body?: string;
@@ -62,6 +69,12 @@ export class AtlassianContent {
 
   @Prop({ type: Date })
   lastContentSyncAt?: Date;
+
+  @Prop({ default: 'atlassian' })
+  syncSource?: 'atlassian' | 'local-copy';
+
+  @Prop()
+  originContentId?: string;
 }
 
 export const AtlassianContentSchema =
