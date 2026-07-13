@@ -16,6 +16,7 @@ import { CreateCardDto } from './dto/finance/create-card.dto';
 import { PartialPaymentDto } from './dto/finance/partial-payment.dto';
 import { UpdateDebtDto } from './dto/finance/update-debt.dto';
 import { UpdateFinanceDto } from './dto/finance/update-finance.dto';
+import { UpdateCardDto } from './dto/finance/update-card.dto';
 import { FinanceService } from './finance.service';
 import { isFinanceType } from './schema/finance.schema';
 
@@ -200,6 +201,14 @@ export class FinanceController {
   @Delete('/cards/:id')
   deleteCard(@Param('id') id: string) {
     return this.financeService.deleteCard(id);
+  }
+
+  @Patch('/cards/:id')
+  updateCard(
+    @Param('id') id: string,
+    @Body() dto: UpdateCardDto,
+  ) {
+    return this.financeService.updateCard(id, dto);
   }
 
   @Get('/personal-expenses')
