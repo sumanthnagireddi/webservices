@@ -64,6 +64,9 @@ export interface AtlassianPageSyncReport {
   trigger: 'cron' | 'manual';
   processed: number;
   synced: number;
+  added: number;
+  updated: number;
+  skipped: number;
   failed: number;
   startedAt: string;
   finishedAt: string;
@@ -78,4 +81,90 @@ export interface AtlassianFolderSyncReport {
   startedAt: string;
   finishedAt: string;
   insertedIds: string[];
+}
+
+// ─────────────────────────────────────────────
+// MONGOOSE SCHEMAS (inline for single-file reference)
+// ─────────────────────────────────────────────
+
+export interface ConfluencePage {
+  confluenceId: string;
+  type: 'page' | 'blogpost';
+  title: string;
+  spaceKey: string;
+  status: 'current' | 'trashed' | 'deleted';
+  parentId: string | null;
+  ancestorIds: string[];
+  body: string;
+  version: number;
+  versionBy: string;
+  createdAt: Date;
+  modifiedAt: Date;
+  deletedAt?: Date;
+  syncedAt: Date;
+}
+
+export interface ConfluenceFolder {
+  confluenceId: string; // space key or page-as-folder id
+  type: 'space' | 'folder';
+  title: string;
+  spaceKey: string;
+  parentId: string | null;
+  status: 'active' | 'archived' | 'deleted';
+  childPageIds: string[];
+  movedFrom?: string | null; // previous parentId if moved
+  modifiedAt: Date;
+  deletedAt?: Date;
+  syncedAt: Date;
+}
+
+export interface SyncMeta {
+  _id: string;
+  lastFullSyncAt: Date | null;
+  lastIncrementalSyncAt: Date | null;
+  lastRunStatus: 'success' | 'failed' | 'partial';
+  lastRunError?: string;
+  totalPagesSynced: number;
+  totalFoldersSynced: number;
+}
+
+// ─────────────────────────────────────────────
+// TYPES
+// ─────────────────────────────────────────────
+
+export type ChangeType =
+  | 'created'
+  | 'updated'
+  | 'deleted'
+  | 'moved'
+  | 'archived';
+
+export interface ConfluenceApiPage {
+  id: string;
+  type: string;
+  title: string;
+  status: string;
+  space: { key: string };
+  version: { number: number; when: string; by: { displayName: string } };
+  ancestors: Array<{ id: string }>;
+  body?: { storage: { value: string } };
+  children?: {
+    page?: {
+      results?: Array<{ id: string }>;
+    };
+  };
+}
+
+export interface ConfluenceApiSpace {
+  key: string;
+  name: string;
+  type: string;
+  status: string;
+}
+
+export interface ChangeResult {
+  changeType: ChangeType;
+  entityType: 'page' | 'folder' | 'space';
+  id: string;
+  title: string;
 }

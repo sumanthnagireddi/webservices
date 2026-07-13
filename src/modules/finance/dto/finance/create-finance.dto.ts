@@ -54,4 +54,20 @@ export class CreateFinanceDto {
   @IsOptional()
   @IsString()
   type?: string;
+
+  @IsOptional()
+  @IsString()
+  cardId?: string;
+
+  @IsOptional()
+  @IsString()
+  usedBy?: string;
+
+  @IsOptional()
+  @IsString()
+  vendor?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: string;
 }

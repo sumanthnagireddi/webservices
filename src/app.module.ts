@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { setServers } from 'node:dns';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -13,6 +14,20 @@ import { InterviewBankModule } from './modules/interview-bank/interview-bank.mod
 import { AtlassianModule } from './modules/atlassian/atlassian.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { SearchModule } from './modules/search/search.module';
+import { ContentModule } from './modules/content/content.module';
+
+const DEFAULT_MONGODB_DNS_SERVERS = ['1.1.1.1', '8.8.8.8'];
+
+function getMongoDnsServers(configService: ConfigService): string[] {
+  const configuredServers = configService.get<string>('MONGODB_DNS_SERVERS');
+
+  return configuredServers
+    ? configuredServers
+        .split(',')
+        .map((server) => server.trim())
+        .filter(Boolean)
+    : DEFAULT_MONGODB_DNS_SERVERS;
+}
 
 @Module({
   imports: [
@@ -23,9 +38,19 @@ import { SearchModule } from './modules/search/search.module';
     ScheduleModule.forRoot(),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
-      }),
+      useFactory: (configService: ConfigService) => {
+        const uri = configService.get<string>('MONGODB_URI');
+
+        if (!uri) {
+          throw new Error('MONGODB_URI is not configured');
+        }
+
+        if (uri.startsWith('mongodb+srv://')) {
+          setServers(getMongoDnsServers(configService));
+        }
+
+        return { uri };
+      },
       inject: [ConfigService],
     }),
     JwtModule.registerAsync({
@@ -45,6 +70,7 @@ import { SearchModule } from './modules/search/search.module';
     InterviewBankModule,
     AtlassianModule,
     NotificationsModule,
+    ContentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

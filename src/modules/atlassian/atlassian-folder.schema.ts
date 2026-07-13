@@ -10,10 +10,10 @@ export type AtlassianFolderDocument = AtlassianFolder & Document;
 })
 export class AtlassianFolder {
   @Prop({ required: true, unique: true, index: true })
-  atlassianId: string;
+  atlassianId!: string;
 
   @Prop({ required: true })
-  title: string;
+  title!: string;
 
   @Prop()
   type?: string;

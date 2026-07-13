@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type FinanceDocument = Finance & Document;
 
@@ -9,7 +9,9 @@ export type FinanceType =
   | 'budget'
   | 'income'
   | 'construction'
-  | 'home_budget';
+  | 'home_budget'
+  | 'card'
+  | 'card_bill';
 
 export const FINANCE_TYPES = [
   'expense',
@@ -18,6 +20,8 @@ export const FINANCE_TYPES = [
   'income',
   'construction',
   'home_budget',
+  'card',
+  'card_bill',
 ] as const satisfies readonly FinanceType[];
 
 export function isFinanceType(value: string | undefined): value is FinanceType {
@@ -85,6 +89,43 @@ export class Finance {
 
   @Prop()
   alertThreshold: number;
+
+  @Prop()
+  lastFour: string;
+
+  @Prop()
+  billingDay: number;
+
+  @Prop()
+  dueDay: number;
+
+  @Prop()
+  creditLimit: number;
+
+  @Prop()
+  cardId: string;
+
+  @Prop()
+  usedBy: string;
+
+  @Prop()
+  vendor: string;
+
+  @Prop()
+  isPaid: boolean;
+
+  @Prop({
+    type: [
+      {
+        id: { type: String, default: () => new Types.ObjectId().toString() },
+        amount: Number,
+        date: String,
+        notes: String,
+      },
+    ],
+    default: [],
+  })
+  partialPayments: { id: string; amount: number; date: string; notes: string }[];
 }
 
 export const FinanceSchema = SchemaFactory.createForClass(Finance);
