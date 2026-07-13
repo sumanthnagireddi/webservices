@@ -212,15 +212,8 @@ export class FinanceController {
   }
 
   @Get('/personal-expenses')
-  async getPersonalExpenses() {
-    const data = await this.financeService.getPersonalExpenses();
-    console.log('LOGGING EXPENSES INFO FOR DEBUGGING:');
-    console.log('Total expenses found:', data.length);
-    if (data.length > 0) {
-      console.log('Sample item:', JSON.stringify(data[0]));
-      console.log('All expense dates and types:', data.map(d => ({ type: d.type, date: d.date, amount: d.amount })));
-    }
-    return data;
+  getPersonalExpenses() {
+    return this.financeService.getPersonalExpenses();
   }
 
   @Post('/personal-expenses')

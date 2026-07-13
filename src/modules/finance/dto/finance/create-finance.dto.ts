@@ -29,7 +29,7 @@ export class CreateFinanceDto {
 
   @IsOptional()
   @IsString()
-  source?: 'manual' | 'sms';
+  source?: string;
 
   @IsOptional()
   @IsString()
