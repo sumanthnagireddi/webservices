@@ -84,6 +84,18 @@ describe('FinanceService', () => {
     expect(findAllExpensesSpy).toHaveBeenCalledWith('construction');
   });
 
+  it('updates a finance record', async () => {
+    const dto = { amount: 60000 };
+    financeModel.findByIdAndUpdate.mockReturnValue({
+      exec: jest.fn().mockResolvedValue({ _id: 'ce-1', amount: 60000 }),
+    });
+
+    const result = await service.update('ce-1', dto);
+
+    expect(financeModel.findByIdAndUpdate).toHaveBeenCalledWith('ce-1', dto, { new: true });
+    expect(result.amount).toBe(60000);
+  });
+
   it('copies budgets within the same budget type', async () => {
     const getBudgetSpy = jest
       .spyOn(service, 'getBudgetForMonth')
@@ -186,6 +198,126 @@ describe('FinanceService', () => {
         percentUsed: 42,
         totalTransactions: 2,
       },
+    });
+  });
+
+  describe('Card Registry and Statements', () => {
+    it('returns all non-deleted cards', async () => {
+      exec.mockResolvedValue([{ name: 'Test Card', lastFour: '1234' }]);
+      const cards = await service.getCards();
+      expect(financeModel.find).toHaveBeenCalledWith({ type: 'card', isDeleted: false });
+      expect(cards).toHaveLength(1);
+    });
+
+    it('calculates statements correctly', async () => {
+      const mockCard = {
+        _id: 'card-1',
+        name: 'HDFC Regalia',
+        billingDay: 15,
+        dueDay: 5,
+        creditLimit: 500000,
+      };
+      const mockExpense = {
+        _id: 'pe-1',
+        amount: 1000,
+        category: 'Food',
+        date: '2026-07-10',
+        cardId: 'card-1',
+        usedBy: 'Self',
+        notes: 'test notes',
+      };
+      
+      financeModel.find.mockImplementation((query) => {
+        return {
+          exec: jest.fn().mockResolvedValue(
+            query.type === 'card'
+              ? [mockCard]
+              : query.type === 'expense'
+              ? [mockExpense]
+              : []
+          ),
+        };
+      });
+
+      const statements = await service.getCardBillStatements('2026-07');
+      expect(statements).toHaveLength(1);
+      expect(statements[0].totalAmount).toBe(1000);
+      expect(statements[0].isPaid).toBe(false);
+      expect(statements[0].transactions).toHaveLength(1);
+    });
+  });
+
+  describe('Debts and Partial Payments', () => {
+    it('creates a debt ledger and maps to frontend format', async () => {
+      financeModel.create.mockResolvedValue({
+        _id: 'debt-1',
+        name: 'Amit',
+        amount: 5000,
+        debtType: 'owed_to_me',
+        dueDate: '2026-07-20',
+        status: 'pending',
+        notes: 'loan info',
+        paidAmount: 0,
+        partialPayments: [],
+      });
+
+      const result = await service.addDebtLedger({
+        contactName: 'Amit',
+        amount: 5000,
+        type: 'Receivable',
+        dueDate: '2026-07-20',
+        notes: 'loan info',
+      });
+
+      expect(financeModel.create).toHaveBeenCalled();
+      expect(result).toMatchObject({
+        id: 'debt-1',
+        contactName: 'Amit',
+        amount: 5000,
+        type: 'Receivable',
+        status: 'Pending',
+        paidAmount: 0,
+      });
+    });
+
+    it('adds a partial payment and recalculates status', async () => {
+      const mockDebt = {
+        _id: 'debt-1',
+        amount: 5000,
+        status: 'pending',
+        partialPayments: [],
+        paidAmount: 0,
+      };
+
+      financeModel.findById.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(mockDebt),
+      });
+      financeModel.findByIdAndUpdate.mockImplementation((id, updates) => {
+        return {
+          exec: jest.fn().mockResolvedValue({
+            ...mockDebt,
+            ...updates,
+          }),
+        };
+      });
+
+      const result = await service.addPartialPayment('debt-1', {
+        amount: 2000,
+        date: '2026-07-15',
+        notes: 'first part',
+      });
+
+      expect(financeModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        'debt-1',
+        expect.objectContaining({
+          paidAmount: 2000,
+          status: 'partial',
+        }),
+        { new: true }
+      );
+      expect(result.status).toBe('Partial');
+      expect(result.paidAmount).toBe(2000);
+      expect(result.partialPayments).toHaveLength(1);
     });
   });
 });
