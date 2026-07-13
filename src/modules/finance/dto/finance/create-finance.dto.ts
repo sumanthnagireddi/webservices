@@ -7,9 +7,9 @@ import {
 } from 'class-validator';
 
 export class CreateFinanceDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  title: string;
+  title?: string;
 
   @IsNotEmpty()
   @IsNumber()

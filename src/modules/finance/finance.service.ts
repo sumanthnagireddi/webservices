@@ -71,7 +71,7 @@ export class FinanceService {
     return this.financeModel
       .find({
         type: resolvedType,
-        isDeleted: false,
+        isDeleted: { $ne: true },
       })
       .sort({ date: -1 })
       .exec();
@@ -92,7 +92,7 @@ export class FinanceService {
     return this.financeModel
       .find({
         type: resolvedType,
-        isDeleted: false,
+        isDeleted: { $ne: true },
         date: { $gte: startStr, $lte: endStr },
       })
       .sort({ date: -1 })
@@ -104,6 +104,10 @@ export class FinanceService {
   }
 
   update(id: string, dto: UpdateFinanceDto) {
+    return this.financeModel.findByIdAndUpdate(id, dto, { new: true }).exec();
+  }
+
+  updateCard(id: string, dto: any) {
     return this.financeModel.findByIdAndUpdate(id, dto, { new: true }).exec();
   }
 
@@ -366,7 +370,7 @@ export class FinanceService {
 
   // Cards
   getCards(): Promise<Finance[]> {
-    return this.financeModel.find({ type: 'card', isDeleted: false }).exec();
+    return this.financeModel.find({ type: 'card', isDeleted: { $ne: true } }).exec();
   }
 
   addCard(dto: CreateCardDto): Promise<Finance> {
@@ -380,7 +384,7 @@ export class FinanceService {
 
   // Personal Expenses
   getPersonalExpenses(): Promise<Finance[]> {
-    return this.financeModel.find({ type: 'expense', isDeleted: false }).exec();
+    return this.financeModel.find({ type: 'expense', isDeleted: { $ne: true } }).exec();
   }
 
   addPersonalExpense(dto: CreateFinanceDto): Promise<Finance> {
@@ -394,7 +398,7 @@ export class FinanceService {
 
   // Personal Target
   async getPersonalTarget(): Promise<number> {
-    const budget = await this.financeModel.findOne({ type: 'budget', monthKey: 'global', isDeleted: false }).exec();
+    const budget = await this.financeModel.findOne({ type: 'budget', monthKey: 'global', isDeleted: { $ne: true } }).exec();
     return budget ? budget.monthlyBudget : 10000;
   }
 
@@ -409,7 +413,7 @@ export class FinanceService {
 
   // Construction Expenses
   getConstructionExpenses(): Promise<Finance[]> {
-    return this.financeModel.find({ type: 'construction', isDeleted: false }).exec();
+    return this.financeModel.find({ type: 'construction', isDeleted: { $ne: true } }).exec();
   }
 
   addConstructionExpense(dto: CreateFinanceDto): Promise<Finance> {
@@ -428,7 +432,7 @@ export class FinanceService {
 
   // Construction Budget
   async getConstructionBudget(): Promise<number> {
-    const budget = await this.financeModel.findOne({ type: 'home_budget', monthKey: 'construction-overall', isDeleted: false }).exec();
+    const budget = await this.financeModel.findOne({ type: 'home_budget', monthKey: 'construction-overall', isDeleted: { $ne: true } }).exec();
     return budget ? budget.monthlyBudget : 5000000;
   }
 
@@ -463,7 +467,7 @@ export class FinanceService {
   }
 
   async getDebtsLedger(): Promise<any[]> {
-    const debts = await this.financeModel.find({ type: 'debt', isDeleted: false }).exec();
+    const debts = await this.financeModel.find({ type: 'debt', isDeleted: { $ne: true } }).exec();
     return debts.map(d => this.mapDebtToFrontend(d));
   }
 
@@ -616,9 +620,9 @@ export class FinanceService {
 
   // Card Billing Calculation
   async getCardBillStatements(targetMonth: string): Promise<any[]> {
-    const cards = await this.financeModel.find({ type: 'card', isDeleted: false }).exec();
-    const expenses = await this.financeModel.find({ type: 'expense', isDeleted: false }).exec();
-    const paidBillsList = await this.financeModel.find({ type: 'card_bill', isDeleted: false }).exec();
+    const cards = await this.financeModel.find({ type: 'card', isDeleted: { $ne: true } }).exec();
+    const expenses = await this.financeModel.find({ type: 'expense', isDeleted: { $ne: true } }).exec();
+    const paidBillsList = await this.financeModel.find({ type: 'card_bill', isDeleted: { $ne: true } }).exec();
     
     const paidBills: Record<string, boolean> = {};
     paidBillsList.forEach(pb => {
@@ -680,7 +684,7 @@ export class FinanceService {
       const isPaid = !!paidBills[billKey];
 
       return {
-        cardId: card._id,
+        cardId: String(card._id),
         cardName: card.name,
         statementMonth: targetMonth,
         startDate: startDateStr,

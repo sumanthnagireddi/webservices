@@ -16,6 +16,7 @@ import { CreateCardDto } from './dto/finance/create-card.dto';
 import { PartialPaymentDto } from './dto/finance/partial-payment.dto';
 import { UpdateDebtDto } from './dto/finance/update-debt.dto';
 import { UpdateFinanceDto } from './dto/finance/update-finance.dto';
+import { UpdateCardDto } from './dto/finance/update-card.dto';
 import { FinanceService } from './finance.service';
 import { isFinanceType } from './schema/finance.schema';
 
@@ -202,9 +203,24 @@ export class FinanceController {
     return this.financeService.deleteCard(id);
   }
 
+  @Patch('/cards/:id')
+  updateCard(
+    @Param('id') id: string,
+    @Body() dto: UpdateCardDto,
+  ) {
+    return this.financeService.updateCard(id, dto);
+  }
+
   @Get('/personal-expenses')
-  getPersonalExpenses() {
-    return this.financeService.getPersonalExpenses();
+  async getPersonalExpenses() {
+    const data = await this.financeService.getPersonalExpenses();
+    console.log('LOGGING EXPENSES INFO FOR DEBUGGING:');
+    console.log('Total expenses found:', data.length);
+    if (data.length > 0) {
+      console.log('Sample item:', JSON.stringify(data[0]));
+      console.log('All expense dates and types:', data.map(d => ({ type: d.type, date: d.date, amount: d.amount })));
+    }
+    return data;
   }
 
   @Post('/personal-expenses')
